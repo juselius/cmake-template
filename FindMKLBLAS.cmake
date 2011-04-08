@@ -31,7 +31,7 @@
 include(BlasFunctions)
 
 if (BLAS_LANG STREQUAL "C")
-	set(BLAS_H_NAME mkl_blas.h)
+	set(BLAS_H_NAME mkl_cblas.h)
 else()
 	set(BLAS_H_NAME mkl_blas.fi)
 endif()
