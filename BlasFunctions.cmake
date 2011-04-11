@@ -31,7 +31,7 @@ macro(find_blas_header)
 	find_path(blas_include_dirs
 		NAMES ${blas_h_name}
 		PATHS ${BLAS_ROOT}
-		PATH_SUFFIXES ${path_suffixes}
+		PATH_SUFFIXES include ${path_suffixes}
 		NO_DEFAULT_PATH
 		)
 	find_path(blas_include_dirs 
