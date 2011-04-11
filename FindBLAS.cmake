@@ -14,7 +14,6 @@
 #
 # None of the above will be defined unless BLAS can be found.
 # 
-
 #=============================================================================
 # Copyright 2011 Jonas Juselius <jonas.juselius@uit.no>
 #
@@ -28,6 +27,17 @@
 # (To distributed this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
+function(find_blas blas_types)
+	foreach (blas ${blas_types})
+		string(STRIP ${blas} blas)
+		set(blas_name "BLAS-${blas}")
+		find_package(${blas_name})
+		if (BLAS_FOUND)
+			break()
+		endif()
+	endforeach()
+endfunction()
+
 if (BLAS_INCLUDE_DIRS AND BLAS_LIBRARIES)
   set(BLAS_FIND_QUIETLY TRUE)
 endif ()
@@ -37,16 +47,6 @@ if (DEFINED ENV{BLAS_TYPE})
 		set(BLAS_TYPE $ENV{BLAS_TYPE})
 	endif()
 endif()
-
-function(find_blas blas_types)
-	foreach (blas ${blas_types})
-		set(blas_name ${blas}BLAS)
-		find_package(${blas_name})
-		if (BLAS_FOUND)
-			break()
-		endif()
-	endforeach()
-endfunction()
 
 if (DEFINED BLAS_TYPE) 
 	set(blas_types ${BLAS_TYPE})

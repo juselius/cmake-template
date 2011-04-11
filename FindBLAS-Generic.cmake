@@ -30,7 +30,7 @@
 include(BlasFunctions)
 
 if (BLAS_LANG STREQUAL "C")
-	set(BLAS_H_NAME cblas.h)
+	set(blas_h_name cblas.h)
 endif()
 
 set(path_suffixes lib)
@@ -46,5 +46,5 @@ find_blas_libs()
 unset(blas_libs)
 unset(path_suffixes)
 
-cache_blas_result(Goto)
+cache_blas_result(generic)
 

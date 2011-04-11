@@ -14,7 +14,6 @@
 #
 # None of the above will be defined unless BLAS can be found.
 # 
-
 #=============================================================================
 # Copyright 2011 Jonas Juselius <jonas.juselius@uit.no>
 #
@@ -27,33 +26,24 @@
 #=============================================================================
 # (To distributed this file outside of CMake, substitute the full
 #  License text for the above reference.)
-
 include(BlasFunctions)
 
 if (BLAS_LANG STREQUAL "C")
-	set(BLAS_H_NAME mkl_cblas.h)
-else()
-	set(BLAS_H_NAME mkl_blas.fi)
+	set(blas_h_name cblas.h)
 endif()
 
-if(${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")
-	set(path_suffixes lib/intel64 lib/em64t)
-	set(blas_libs mkl_core mkl_intel_lp64 mkl_sequential guide pthread m)
+set(path_suffixes lib lib/atlas)
+if (BLAS_LANG STREQUAL "C")
+	set(blas_libs cblas atlas f77blas)
 else()
-	set(path_suffixes lib/ia32 lib/32)
-	set(blas_libs mkl_core mkl_intel mkl_sequential guide pthread m)
+	set(blas_libs atlas f77blas)
 endif()
-
 
 find_blas_header()
 find_blas_libs()
 
-if(BLAS_LIBRARIES)
-	set(BLAS_LIBRARIES -Wl,--start-group ${BLAS_LIBRARIES} -Wl,--end-group )
-endif()
-
 unset(blas_libs)
 unset(path_suffixes)
 
-cache_blas_result(MKL)
+cache_blas_result(Atlas)
 

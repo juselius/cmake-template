@@ -11,6 +11,8 @@
 # (To distributed this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
+include(FindPackageHandleStandardArgs)
+
 if (EXISTS $ENV{BLAS_ROOT})
     if (NOT DEFINED BLAS_ROOT})
         set(BLAS_ROOT} $ENV{BLAS_ROOT})
@@ -26,14 +28,15 @@ elseif(NOT BLAS_LANG STREQUAL "Fortran")
 endif()
 
 macro(find_blas_header)
-	find_path(BLAS_INCLUDE_DIRS
-		NAMES ${BLAS_H_NAME}
+	find_path(blas_include_dirs
+		NAMES ${blas_h_name}
 		PATHS ${BLAS_ROOT}
-		PATH_SUFFIXES include
+		PATH_SUFFIXES ${path_suffixes}
 		NO_DEFAULT_PATH
 		)
-	find_path(BLAS_INCLUDE_DIRS 
-		NAMES ${BLAS_H_NAME}
+	find_path(blas_include_dirs 
+		NAMES ${blas_h_name}
+		PATH_SUFFIXES include
 		)
 endmacro()
 
@@ -48,7 +51,7 @@ macro(find_blas_libs)
 			PATH_SUFFIXES ${path_suffixes}
 			)
 		if(_lib)
-			set(BLAS_LIBRARIES ${BLAS_LIBRARIES} ${_lib})
+			set(blas_libraries ${BLAS_LIBRARIES} ${_lib})
 			unset(_lib CACHE)
 		else()
 			break()
@@ -59,7 +62,19 @@ macro(find_blas_libs)
 endmacro()
 
 macro(cache_blas_result blas_type)
-	include(FindPackageHandleStandardArgs)
+	if (blas_h_name)
+		set(BLAS_H_NAME ${blas_h_name})
+	endif()
+	if (blas_include_dirs)
+		set(BLAS_INCLUDE_DIRS ${blas_include_dirs})
+	endif()
+	if (blas_libraries)
+		set(BLAS_LIBRARIES ${blas_libraries})
+	endif()
+	unset(blas_h_name)
+	unset(blas_include_dirs)
+	unset(blas_libraries)
+
 	if (BLAS_H_NAME)
 		find_package_handle_standard_args(BLAS 
 			"Could NOT find ${blas_type} BLAS"
