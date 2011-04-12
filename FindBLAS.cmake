@@ -11,9 +11,10 @@
 #  BLAS_FOUND Defined if BLAS is available 
 #  HAVE_BLAS To be used in #ifdefs 
 #  BLAS_H Name of BLAS header file
-#
 # None of the above will be defined unless BLAS can be found.
 # 
+# This module accepts the COMPONENTS flag, whereby a specific (set) of BLAS 
+# implementation(s) can be requested (e.g. find_package(BLAS COMPONENTS MKL))
 #=============================================================================
 # Copyright 2011 Jonas Juselius <jonas.juselius@uit.no>
 #
@@ -27,8 +28,8 @@
 # (To distributed this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
-function(find_blas blas_types)
-	foreach (blas ${blas_types})
+function(find_blas)
+	foreach (blas ${BLAS_FIND_COMPONENTS})
 		string(STRIP ${blas} blas)
 		set(blas_name "BLAS-${blas}")
 		find_package(${blas_name})
@@ -42,18 +43,9 @@ if (BLAS_INCLUDE_DIRS AND BLAS_LIBRARIES)
   set(BLAS_FIND_QUIETLY TRUE)
 endif ()
 
-if (DEFINED ENV{BLAS_TYPE}) 
-	if (NOT DEFINED BLAS_TYPE})
-		set(BLAS_TYPE $ENV{BLAS_TYPE})
-	endif()
+if (NOT BLAS_FIND_COMPONENTS) 
+	set(BLAS_FIND_COMPONENTS MKL Atlas Goto Generic)
 endif()
 
-if (DEFINED BLAS_TYPE) 
-	set(blas_types ${BLAS_TYPE})
-else()
-	set(blas_types MKL Atlas Goto Generic)
-endif()
+find_blas()
 
-find_blas("${blas_types}")
-
-unset(blas_types)
