@@ -51,7 +51,7 @@ macro(find_blas_libs)
 			PATH_SUFFIXES ${path_suffixes}
 			)
 		if(_lib)
-			set(blas_libraries ${BLAS_LIBRARIES} ${_lib})
+			set(blas_libraries ${blas_libraries} ${_lib})
 			unset(_lib CACHE)
 		else()
 			break()
