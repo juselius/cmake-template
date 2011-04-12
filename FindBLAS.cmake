@@ -57,3 +57,7 @@ endif()
 find_blas("${blas_types}")
 
 unset(blas_types)
+
+if(BLAS_LIBRARIES)
+   set(BLAS_FOUND TRUE)
+endif()
