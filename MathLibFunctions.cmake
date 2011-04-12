@@ -13,9 +13,18 @@
 
 include(FindPackageHandleStandardArgs)
 
+if (EXISTS $ENV{MATH_ROOT})
+    if (NOT DEFINED BLAS_ROOT})
+        set(BLAS_ROOT $ENV{MATH_ROOT})
+    endif()
+    if (NOT DEFINED LAPACK_ROOT})
+        set(LAPACK_ROOT $ENV{MATH_ROOT})
+    endif()
+endif()
+
 if (EXISTS $ENV{BLAS_ROOT})
     if (NOT DEFINED BLAS_ROOT})
-        set(BLAS_ROOT} $ENV{BLAS_ROOT})
+        set(BLAS_ROOT $ENV{BLAS_ROOT})
     endif()
 endif()
 
@@ -29,7 +38,7 @@ endif()
 
 if (EXISTS $ENV{LAPACK_ROOT})
     if (NOT DEFINED LAPACK_ROOT})
-        set(LAPACK_ROOT} $ENV{LAPACK_ROOT})
+        set(LAPACK_ROOT $ENV{LAPACK_ROOT})
     endif()
 endif()
 
