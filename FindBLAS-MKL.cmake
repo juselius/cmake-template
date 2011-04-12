@@ -31,8 +31,6 @@ include(BlasFunctions)
 
 if (BLAS_LANG STREQUAL "C")
 	set(blas_h_name mkl_cblas.h)
-else()
-	set(blas_h_name mkl_blas.fi)
 endif()
 
 if(${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")
