@@ -10,7 +10,7 @@
 #  BLAS_LIBRARIES Libraries to link against to use BLAS
 #  BLAS_FOUND Defined if BLAS is available 
 #  HAVE_BLAS To be used in #ifdefs 
-#  BLAS_H_NAME Name of BLAS header file
+#  BLAS_H Name of BLAS header file
 #
 # None of the above will be defined unless BLAS can be found.
 # 
@@ -30,7 +30,7 @@
 include(BlasFunctions)
 
 if (BLAS_LANG STREQUAL "C")
-	set(blas_h_name mkl_cblas.h)
+	set(blas_h mkl_cblas.h)
 endif()
 
 if(${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")

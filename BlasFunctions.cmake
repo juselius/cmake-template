@@ -28,15 +28,15 @@ elseif(NOT BLAS_LANG STREQUAL "Fortran")
 endif()
 
 macro(find_blas_header)
-	if (blas_h_name)
+	if (blas_h)
 		find_path(blas_include_dirs
-			NAMES ${blas_h_name}
+			NAMES ${blas_h}
 			PATHS ${BLAS_ROOT}
 			PATH_SUFFIXES include ${path_suffixes}
 			NO_DEFAULT_PATH
 			)
 		find_path(blas_include_dirs 
-			NAMES ${blas_h_name}
+			NAMES ${blas_h}
 			PATH_SUFFIXES include
 			)
 	endif()
@@ -64,8 +64,8 @@ macro(find_blas_libs)
 endmacro()
 
 macro(cache_blas_result blas_type)
-	if (blas_h_name)
-		set(BLAS_H_NAME ${blas_h_name})
+	if (blas_h)
+		set(BLAS_H ${blas_h})
 	endif()
 	if (blas_include_dirs)
 		set(BLAS_INCLUDE_DIRS ${blas_include_dirs})
@@ -73,14 +73,14 @@ macro(cache_blas_result blas_type)
 	if (blas_libraries)
 		set(BLAS_LIBRARIES ${blas_libraries})
 	endif()
-	unset(blas_h_name)
+	unset(blas_h)
 	unset(blas_include_dirs)
 	unset(blas_libraries)
 
-	if (BLAS_H_NAME)
+	if (BLAS_H)
 		find_package_handle_standard_args(BLAS 
 			"Could NOT find ${blas_type} BLAS"
-			BLAS_INCLUDE_DIRS BLAS_LIBRARIES BLAS_H_NAME)
+			BLAS_INCLUDE_DIRS BLAS_LIBRARIES BLAS_H)
 	else()
 		find_package_handle_standard_args(BLAS 
 			"Could NOT find ${blas_type} BLAS" BLAS_LIBRARIES)
@@ -90,11 +90,11 @@ macro(cache_blas_result blas_type)
 		set(HAVE_BLAS ON CACHE INTERNAL "Defined if BLAS is available")
 		set(BLAS_LIBRARIES ${BLAS_LIBRARIES} CACHE STRING "BLAS libraries")
 		mark_as_advanced(BLAS_LIBRARIES)
-		if (BLAS_H_NAME)
-        	set(BLAS_H_NAME ${BLAS_H_NAME} CACHE STRING "Name of BLAS header")
+		if (BLAS_H)
+        	set(BLAS_H ${BLAS_H} CACHE STRING "Name of BLAS header")
         	set(BLAS_INCLUDE_DIRS ${BLAS_INCLUDE_DIRS} 
 				CACHE STRING "BLAS include directory")
-			mark_as_advanced(BLAS_INCLUDE_DIRS BLAS_H_NAME)
+			mark_as_advanced(BLAS_INCLUDE_DIRS BLAS_H)
 		endif()
 	endif()
 endmacro()
