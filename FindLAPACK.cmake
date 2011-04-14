@@ -16,6 +16,7 @@
 # 
 #=============================================================================
 # Copyright 2011 Jonas Juselius <jonas.juselius@uit.no>
+#                Radovan Bast   <radovan.bast@uit.no>
 #
 # Distributed under the OSI-approved BSD License (the "License");
 # see accompanying file Copyright.txt for details.
@@ -27,37 +28,95 @@
 # (To distributed this file outside of CMake, substitute the full
 #  License text for the above reference.)
 
+include(MathLibFunctions)
+
+if (EXISTS $ENV{MATH_ROOT})
+	if (NOT DEFINED LAPACK_ROOT})
+		set(LAPACK_ROOT $ENV{MATH_ROOT})
+	endif()
+endif()
+
+if (EXISTS $ENV{LAPACK_ROOT})
+	if (NOT DEFINED LAPACK_ROOT})
+		set(LAPACK_ROOT $ENV{LAPACK_ROOT})
+	endif()
+endif()
+
+# Default names for the headers
+if (MATH_LANG STREQUAL "C")
+	set(lapack_h clapack.h)
+	set(lapack_libs clapack)
+else()
+	set(lapack_libs lapack)
+endif()
+
+if (LAPACK_INCLUDE_DIRS AND LAPACK_LIBRARIES)
+  set(LAPACK_FIND_QUIETLY TRUE)
+endif ()
+
+if (NOT LAPACK_FIND_COMPONENTS) 
+	set(LAPACK_FIND_COMPONENTS MKL Atlas default)
+endif()
+
 function(find_lapack lapack_types)
-	foreach (lapack ${lapack_types})
-		string(STRIP ${lapack} lapack)
-		set(lapack_name "LAPACK-${lapack}")
-		find_package(${lapack_name})
+	foreach (lapack ${LAPACK_FIND_COMPONENTS})
+		if (${lapack} MATCHES "MKL")
+			find_mkl()
+		elseif (${lapack} MATCHES "Atlas")
+			find_atlas()
+		else()
+			find_default()
+		endif()
 		if (LAPACK_FOUND)
 			break()
 		endif()
 	endforeach()
 endfunction()
 
-if (LAPACK_INCLUDE_DIRS AND LAPACK_LIBRARIES)
-  set(LAPACK_FIND_QUIETLY TRUE)
-endif ()
+function(find_default)
+	set(path_suffixes lib)
+	find_math_header(lapack)
+	find_math_libs(lapack)
+	cache_math_result(default lapack)
+endfunction()
 
-if (DEFINED ENV{LAPACK_TYPE}) 
-	if (NOT DEFINED LAPACK_TYPE})
-		set(LAPACK_TYPE $ENV{LAPACK_TYPE})
+function(find_atlas)
+	set(path_suffixes lib lib/atlas)
+	if (MATH_LANG STREQUAL "C")
+		set(lapack_libs clapack atlas f77lapack)
+	else()
+		set(lapack_libs atlas f77lapack)
 	endif()
-endif()
 
-if (DEFINED LAPACK_TYPE) 
-	set(lapack_types ${LAPACK_TYPE})
-else()
-	set(lapack_types MKL Atlas Goto Generic)
-endif()
+	find_math_header(lapack)
+	find_math_libs(lapack)
+	cache_math_result(Atlas lapack)
+endfunction()
 
-find_lapack("${lapack_types}")
+function(find_mkl)
+	if(${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+		set(path_suffixes lib/intel64 lib/em64t)
+		set(lapack_libs mkl_core mkl_intel_lp64 mkl_sequential guide pthread m)
+	else()
+		set(path_suffixes lib/ia32 lib/32)
+		set(lapack_libs mkl_lapack)
+	endif()
 
-unset(lapack_types)
+	find_math_header(lapack)
+	find_math_libs(lapack)
+
+	if(lapack_libraries)
+		set(lapack_libraries 
+			-Wl,--start-group ${lapack_libraries} -Wl,--end-group )
+	endif()
+	cache_math_result(MKL lapack)
+endfunction()
+
+find_lapack()
 
 if(LAPACK_LIBRARIES)
    set(LAPACK_FOUND TRUE)
 endif()
+
+unset(lapack_h)
+unset(lapack_libs)

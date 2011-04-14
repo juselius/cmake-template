@@ -15,32 +15,12 @@
 
 include(FindPackageHandleStandardArgs)
 
-if (EXISTS $ENV{MATH_ROOT})
-	if (NOT DEFINED LAPACK_ROOT})
-		set(LAPACK_ROOT $ENV{MATH_ROOT})
-	endif()
-endif()
-
-if (EXISTS $ENV{LAPACK_ROOT})
-	if (NOT DEFINED LAPACK_ROOT})
-		set(LAPACK_ROOT $ENV{LAPACK_ROOT})
-	endif()
-endif()
-
 if (NOT MATH_LANG)
 	set(MATH_LANG C)
 elseif(MATH_LANG STREQUAL "C" OR MATH_LANG STREQUAL "CXX")
 	set(MATH_LANG C)
 elseif(NOT MATH_LANG STREQUAL "Fortran")
 	message(FATAL_ERROR "Invalid math library linker language: ${MATH_LANG}")
-endif()
-
-# Default names for the headers
-if (MATH_LANG STREQUAL "C")
-	set(lapack_h clapack.h)
-	set(lapack_libs clapack)
-else()
-	set(lapack_libs lapack)
 endif()
 
 macro(find_math_header _service)
