@@ -1,5 +1,7 @@
 #=============================================================================
 # Copyright 2011 Jonas Juselius <jonas.juselius@uit.no>
+# 
+# Conributions by Radovan Bast <radovan.bast@uit.no>
 #
 # Distributed under the OSI-approved BSD License (the "License");
 # see accompanying file Copyright.txt for details.
@@ -14,44 +16,35 @@
 include(FindPackageHandleStandardArgs)
 
 if (EXISTS $ENV{MATH_ROOT})
-    if (NOT DEFINED BLAS_ROOT})
-        set(BLAS_ROOT $ENV{MATH_ROOT})
-    endif()
-    if (NOT DEFINED LAPACK_ROOT})
-        set(LAPACK_ROOT $ENV{MATH_ROOT})
-    endif()
-endif()
-
-if (EXISTS $ENV{BLAS_ROOT})
-    if (NOT DEFINED BLAS_ROOT})
-        set(BLAS_ROOT $ENV{BLAS_ROOT})
-    endif()
-endif()
-
-if (NOT BLAS_LANG)
-	set(BLAS_LANG C)
-elseif(BLAS_LANG STREQUAL "C" OR BLAS_LANG STREQUAL "CXX")
-	set(BLAS_LANG C)
-elseif(NOT BLAS_LANG STREQUAL "Fortran")
-	message(FATAL_ERROR "Invalid BLAS linker langugae: ${BLAS_LANG}")
+	if (NOT DEFINED LAPACK_ROOT})
+		set(LAPACK_ROOT $ENV{MATH_ROOT})
+	endif()
 endif()
 
 if (EXISTS $ENV{LAPACK_ROOT})
-    if (NOT DEFINED LAPACK_ROOT})
-        set(LAPACK_ROOT $ENV{LAPACK_ROOT})
-    endif()
+	if (NOT DEFINED LAPACK_ROOT})
+		set(LAPACK_ROOT $ENV{LAPACK_ROOT})
+	endif()
 endif()
 
-if (NOT LAPACK_LANG)
-	set(LAPACK_LANG C)
-elseif(LAPACK_LANG STREQUAL "C" OR LAPACK_LANG STREQUAL "CXX")
-	set(LAPACK_LANG C)
-elseif(NOT LAPACK_LANG STREQUAL "Fortran")
-	message(FATAL_ERROR "Invalid LAPACK linker langugae: ${LAPACK_LANG}")
+if (NOT MATH_LANG)
+	set(MATH_LANG C)
+elseif(MATH_LANG STREQUAL "C" OR MATH_LANG STREQUAL "CXX")
+	set(MATH_LANG C)
+elseif(NOT MATH_LANG STREQUAL "Fortran")
+	message(FATAL_ERROR "Invalid math library linker language: ${MATH_LANG}")
+endif()
+
+# Default names for the headers
+if (MATH_LANG STREQUAL "C")
+	set(lapack_h clapack.h)
+	set(lapack_libs clapack)
+else()
+	set(lapack_libs lapack)
 endif()
 
 macro(find_math_header _service)
-        string(TOUPPER ${_service} _SERVICE)
+	string(TOUPPER ${_service} _SERVICE)
 	if (${_service}_h)
 		find_path(${_service}_include_dirs
 			NAMES ${${_service}_h}
@@ -67,7 +60,7 @@ macro(find_math_header _service)
 endmacro()
 
 macro(find_math_libs _service)
-        string(TOUPPER ${_service} _SERVICE)
+	string(TOUPPER ${_service} _SERVICE)
 	foreach(${_service}lib ${${_service}_libs})
 		find_library(_lib ${${_service}lib}
 			PATHS ${${_SERVICE}_ROOT}
@@ -89,7 +82,7 @@ macro(find_math_libs _service)
 endmacro()
 
 macro(cache_math_result math_type _service)
-        string(TOUPPER ${_service} _SERVICE)
+	string(TOUPPER ${_service} _SERVICE)
 	if (${_service}_h)
 		set(${_SERVICE}_H ${${_service}_h})
 	endif()
@@ -117,8 +110,8 @@ macro(cache_math_result math_type _service)
 		set(${_SERVICE}_LIBRARIES ${${_SERVICE}_LIBRARIES} CACHE STRING "${_SERVICE} libraries")
 		mark_as_advanced(${_SERVICE}_LIBRARIES)
 		if (${_SERVICE}_H)
-        	set(${_SERVICE}_H ${${_SERVICE}_H} CACHE STRING "Name of ${_SERVICE} header")
-        	set(${_SERVICE}_INCLUDE_DIRS ${${_SERVICE}_INCLUDE_DIRS}
+			set(${_SERVICE}_H ${${_SERVICE}_H} CACHE STRING "Name of ${_SERVICE} header")
+			set(${_SERVICE}_INCLUDE_DIRS ${${_SERVICE}_INCLUDE_DIRS}
 				CACHE STRING "${_SERVICE} include directory")
 			mark_as_advanced(${_SERVICE}_INCLUDE_DIRS ${_SERVICE}_H)
 		endif()
