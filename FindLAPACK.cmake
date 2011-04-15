@@ -91,8 +91,6 @@ endfunction()
 function(find_mkl)
 	if(${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")
 		set(path_suffixes lib/intel64 lib/em64t)
-	#	set(lapack_libs mkl_core mkl_intel_lp64 mkl_sequential guide pthread m)
-	# guessing:
 		set(lapack_libs mkl_lapack)
 	else()
 		set(path_suffixes lib/ia32 lib/32)
