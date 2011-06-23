@@ -1,6 +1,6 @@
-# - Find a LAPACK library 
+# - Find a LAPACK library
 #
-# This module will first look in LAPACK_ROOT before considering the default 
+# This module will first look in LAPACK_ROOT before considering the default
 # system pahts.
 # The linker language can be defined by setting the varable LAPACK_LANG
 #
@@ -8,12 +8,12 @@
 #
 #  LAPACK_INCLUDE_DIRS Where to find lapack.h (or equivalent)
 #  LAPACK_LIBRARIES Libraries to link against to use LAPACK
-#  LAPACK_FOUND Defined if LAPACK is available 
-#  HAVE_LAPACK To be used in #ifdefs 
+#  LAPACK_FOUND Defined if LAPACK is available
+#  HAVE_LAPACK To be used in #ifdefs
 #  LAPACK_H Name of LAPACK header file
 #
 # None of the above will be defined unless LAPACK can be found.
-# 
+#
 #=============================================================================
 # Copyright 2011 Jonas Juselius <jonas.juselius@uit.no>
 #                Radovan Bast   <radovan.bast@uit.no>
@@ -42,6 +42,15 @@ if (EXISTS $ENV{LAPACK_ROOT})
 	endif()
 endif()
 
+# BLAS and LAPACK often go together
+if (NOT DEFINED LAPACK_ROOT})
+	if (DEFINED BLAS_ROOT})
+		set(LAPACK_ROOT ${BLAS_ROOT})
+	elseif (EXISTS $ENV{BLAS_ROOT})
+		set(LAPACK_ROOT $ENV{BLAS_ROOT})
+	endif()
+endif()
+
 # Default names for the headers
 if (MATH_LANG STREQUAL "C")
 	set(lapack_h clapack.h)
@@ -52,11 +61,11 @@ if (LAPACK_INCLUDE_DIRS AND LAPACK_LIBRARIES)
   set(LAPACK_FIND_QUIETLY TRUE)
 endif ()
 
-if (NOT LAPACK_FIND_COMPONENTS) 
+if (NOT LAPACK_FIND_COMPONENTS)
 	set(LAPACK_FIND_COMPONENTS MKL Atlas default)
 endif()
 
-function(find_lapack lapack_types)
+function(find_lapack)
 	foreach (lapack ${LAPACK_FIND_COMPONENTS})
 		if (${lapack} MATCHES "MKL")
 			find_mkl()
@@ -91,7 +100,7 @@ endfunction()
 function(find_mkl)
 	if(${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")
 		set(path_suffixes lib/intel64 lib/em64t)
-		set(lapack_libs mkl_core mkl_intel_lp64 mkl_sequential guide pthread m)
+		set(lapack_libs mkl_lapack)
 	else()
 		set(path_suffixes lib/ia32 lib/32)
 		set(lapack_libs mkl_lapack)
@@ -101,7 +110,7 @@ function(find_mkl)
 	find_math_libs(lapack)
 
 	if(lapack_libraries)
-		set(lapack_libraries 
+		set(lapack_libraries
 			-Wl,--start-group ${lapack_libraries} -Wl,--end-group )
 	endif()
 	cache_math_result(MKL lapack)
