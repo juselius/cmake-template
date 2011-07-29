@@ -1,6 +1,6 @@
-# - Find a BLAS library 
+# - Find a BLAS library
 #
-# This module will first look in BLAS_ROOT before considering the default 
+# This module will first look in BLAS_ROOT before considering the default
 # system pahts.
 # The linker language can be defined by setting the varable BLAS_LANG
 #
@@ -8,9 +8,10 @@
 #
 #  BLAS_INCLUDE_DIRS Where to find blas.h (or equivalent)
 #  BLAS_LIBRARIES Libraries to link against to use BLAS
-#  BLAS_FOUND Defined if BLAS is available 
-#  HAVE_BLAS To be used in #ifdefs 
+#  BLAS_FOUND Defined if BLAS is available
+#  HAVE_BLAS To be used in #ifdefs
 #  BLAS_H Name of BLAS header file
+#
 # None of the above will be defined unless BLAS can be found.
 # 
 # This module accepts the COMPONENTS flag, whereby a specific (set) of BLAS 
@@ -53,7 +54,7 @@ if (BLAS_INCLUDE_DIRS AND BLAS_LIBRARIES)
   set(BLAS_FIND_QUIETLY TRUE)
 endif ()
 
-if (NOT BLAS_FIND_COMPONENTS) 
+if (NOT BLAS_FIND_COMPONENTS)
 	set(BLAS_FIND_COMPONENTS MKL Atlas default)
 endif()
 
@@ -72,14 +73,25 @@ function(find_blas)
 	endforeach()
 endfunction()
 
-function(find_default)
-	set(path_suffixes lib)
+macro(find_default)
+	if(${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+	    if(LINUX_UBUNTU)
+                # apparently ubuntu throws everything into lib
+	        set(path_suffixes lib)
+	    else()
+	        set(path_suffixes lib64)
+	    endif()
+	else()
+	    set(path_suffixes lib)
+	endif()
+	set(blas_libs blas)
+
 	find_math_header(blas)
 	find_math_libs(blas)
 	cache_math_result(default blas)
-endfunction()
+endmacro()
 
-function(find_atlas)
+macro(find_atlas)
 	set(path_suffixes lib lib/atlas)
 	if (MATH_LANG STREQUAL "C")
 		set(blas_libs cblas atlas f77blas)
@@ -90,9 +102,9 @@ function(find_atlas)
 	find_math_header(blas)
 	find_math_libs(blas)
 	cache_math_result(Atlas blas)
-endfunction()
+endmacro()
 
-function(find_mkl)
+macro(find_mkl)
 	if (MATH_LANG STREQUAL "C")
 		set(blas_h mkl_cblas.h)
 	endif()
@@ -111,7 +123,7 @@ function(find_mkl)
 		set(blas_libraries -Wl,--start-group ${blas_libraries} -Wl,--end-group )
 	endif()
 	cache_math_result(MKL blas)
-endfunction()
+endmacro()
 
 find_blas()
 
