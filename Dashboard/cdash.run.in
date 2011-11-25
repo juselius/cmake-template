@@ -1,0 +1,51 @@
+#!/bin/sh -l
+#
+# Example PBS run file for testing a branch with different 
+# compilers and settings. Should be reimplemented in Python.
+#
+###-------- PBS parameters ----------
+#PBS -N cdash.run
+#PBS -o cdash.out 
+#PBS -e qsub.out
+#PBS -j oe
+#PBS -lnodes=c24-15:ppn=8
+#PBS -lwalltime=01:00:00
+#PBS -lpmem=1000MB
+###-------- end PBS parameters ----------
+
+dashdir="@DASHBOARD_DIR@"
+
+[ "x$site" = "x" ] && site=`hostname -s`
+site="$site.$USER"
+
+case $site in 
+	stallo*)
+	module load cmake
+	module load boost
+	module load eigen
+	module load google-test
+	module load valgrind
+	export BOOST_ROOT=$BOOSTHOME
+	export MPIEXEC_PREFLAGS="--mca btl self,tcp"
+	toolchain_name=Intel
+	;;
+esac
+
+if [ "x$PBS_JOBID" != "x" ]; then
+	$dashdir/run_dashboard.py --memcheck=on
+
+	export CXX=mpic++
+	export CC=mpicc
+	export FC=mpif90
+	run_dashboard --build=Release --parallel=on
+
+	export CXX=g++
+	export CC=gcc
+	export FC=gfortran
+	run_dashboard --toolchain_name=GNU --parallel=on --coverage=on --memcheck=on
+else
+	./run_dashboard --
+fi
+
+# ------ END  ------
+# vim:syntax=sh:filetype=sh

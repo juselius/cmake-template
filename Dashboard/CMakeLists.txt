@@ -11,3 +11,15 @@ foreach(fname ${suppression_files})
 	file(APPEND ${CMAKE_BINARY_DIR}/valgrind-suppressions.txt ${vgs})
 endforeach()
 
+configure_file(${CMAKE_SOURCE_DIR}/Dashboard/run_dashboard.py.in
+	${CMAKE_BINARY_DIR}/Dashboard/run_dashboard.py @ONLY
+	)
+execute_process(COMMAND 
+	chmod 755 ${CMAKE_BINARY_DIR}/Dashboard/run_dashboard.py OUTPUT_QUIET) 
+
+configure_file(${CMAKE_SOURCE_DIR}/Dashboard/cdash.run.in
+	${CMAKE_BINARY_DIR}/Dashboard/cdash.run @ONLY
+	)
+execute_process(COMMAND 
+	chmod 755 ${CMAKE_BINARY_DIR}/Dashboard/cdash.run OUTPUT_QUIET) 
+

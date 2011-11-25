@@ -25,7 +25,7 @@ usage = '''
 
 # initialize parser
 
-parser = ArgumentParser(description="Setup build configurations.")
+parser = ArgumentParser(usage=usage, description="Setup build configurations.")
 
 # define options
 
@@ -33,7 +33,7 @@ group = parser.add_argument_group('Basic options')
 group.add_argument('--auto',
 		action='store_true',
 		default=False,
-		help='try to configure --fc, --cc, --cpp  automatically [default: %(default)s]')
+		help='try to configure --fc, --cc, --cxx  automatically [default: %(default)s]')
 group.add_argument('--fc',
 		action='store',
 		default=None,
@@ -44,7 +44,7 @@ group.add_argument('--cc',
 		default=None,
 		help='set the C compiler [default: pick automatically or based on CC=...]',
 		metavar='STRING')
-group.add_argument('--cpp',
+group.add_argument('--cxx',
 		action='store',
 		default=None,
 		help='set the C++ compiler [default: pick automatically or based on CXX=...]',
@@ -144,8 +144,8 @@ def gen_cmake_command():
 			command += ' FC=%s' % args.fc
 		if args.cc:
 			command += ' CC=%s' % args.cc
-		if args.cpp:
-			command += ' CXX=%s' % args.cpp
+		if args.cxx:
+			command += ' CXX=%s' % args.cxx
 
 	if args.alternative_cmake: 
 		command += ' %s' % args.alternative_cmake
