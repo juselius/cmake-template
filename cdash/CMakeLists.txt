@@ -11,15 +11,15 @@ foreach(fname ${suppression_files})
 	file(APPEND ${CMAKE_BINARY_DIR}/valgrind-suppressions.txt ${vgs})
 endforeach()
 
-configure_file(${CMAKE_SOURCE_DIR}/cdash/ctest.py.in
-	${CMAKE_SOURCE_DIR}/cdash/ctest.py @ONLY
+configure_file(${CMAKE_SOURCE_DIR}/cdash/cdash.py.in
+	${CMAKE_SOURCE_DIR}/cdash/cdash.py @ONLY
 	)
 execute_process(COMMAND 
-	chmod 755 ${CMAKE_SOURCE_DIR}/cdash/ctest.py OUTPUT_QUIET) 
+	chmod 755 ${CMAKE_SOURCE_DIR}/cdash/cdash.py OUTPUT_QUIET) 
 
-configure_file(${CMAKE_SOURCE_DIR}/cdash/ctest.run.in
-	${CMAKE_SOURCE_DIR}/cdash/ctest.run @ONLY
+configure_file(${CMAKE_SOURCE_DIR}/cdash/cdash.run.in
+	${CMAKE_SOURCE_DIR}/cdash/cdash.run @ONLY
 	)
 execute_process(COMMAND 
-	chmod 755 ${CMAKE_SOURCE_DIR}/cdash/ctest.run OUTPUT_QUIET) 
+	chmod 755 ${CMAKE_SOURCE_DIR}/cdash/cdash.run OUTPUT_QUIET) 
 
