@@ -48,6 +48,7 @@ add_subdirectory(src)
 
 if (ENABLE_TESTS)
 	include(ConfigTesting)
+	add_subdirectory(tests)
 endif()
 
 include(ConfigGitRevision)
@@ -57,7 +58,7 @@ configure_file (
 	${PROJECT_BINARY_DIR}/config.h
 	)
 
-if (EXISTS ${CMAKE_SOURCE_DIR}/cmake/ConfigPackaging.cmake))
+if (EXISTS ${CMAKE_SOURCE_DIR}/cmake/ConfigPackaging.cmake)
 	include(ConfigPackaging) 
 endif()
 

@@ -66,6 +66,6 @@ configure_file (
 	${PROJECT_BINARY_DIR}/config.h
 	)
 
-if (EXISTS ${CMAKE_SOURCE_DIR}/cmake/ConfigPackaging.cmake))
+if (EXISTS ${CMAKE_SOURCE_DIR}/cmake/ConfigPackaging.cmake)
 	include(ConfigPackaging) 
 endif()
