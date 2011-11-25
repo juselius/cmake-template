@@ -232,6 +232,8 @@ def save_setup_command(argv, build_path):
 	f.close()
 
 def setup_build_path(build_path, only_show_command):
+	if args.show:
+		return
 	if os.path.isdir(build_path):
 		if not only_show_command:
 			print('aborting setup - build directory %s exists already' % build_path)
