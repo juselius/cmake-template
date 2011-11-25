@@ -10,9 +10,9 @@ mark_as_advanced(VALGRIND_EXECUTABLE)
 
 if (EXISTS ${CMAKE_SOURCE_DIR}/CTestConfig.cmake)
 	include(CTest)
-	if (EXISTS ${CMAKE_SOURCE_DIR}/Dashboard)
-		set (DASHBOARD_DIR ${CMAKE_SOURCE_DIR}/Dashboard)
-		add_subdirectory(Dashboard)
+	if (EXISTS ${CMAKE_SOURCE_DIR}/cdash)
+		set (DASHBOARD_DIR ${CMAKE_SOURCE_DIR}/cdash)
+		add_subdirectory(cdash)
 	endif()
 endif()
 
