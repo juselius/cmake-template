@@ -276,13 +276,16 @@ def main():
 # host/system specific configurations
 
 def configure_stallo():
+	if not args.cc:
+		args.cc = 'icc'
+	if not args.cxx:
+		args.cxx = 'icpc'
 	if not args.fc:
+		args.fc = 'ifort'
+	if args.mpi:
 		args.fc = 'mpif90'
-		if not args.cc:
-			args.cc = 'mpicc'
-		if args.mpi:
-			args.fc = 'mpif90'
-			args.cc = 'mpicc'
+		args.cc = 'mpicc'
+		args.cxx = 'mpicxx'
 
 if __name__ == '__main__':
 	main()
