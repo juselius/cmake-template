@@ -58,7 +58,7 @@ parser.add_argument('--fc',
 		help='set Fortran compiler name')
 parser.add_argument('--toolchain-name',
 		action='store',
-		default='gnu',
+		default=None,
 		help='set toolchain [default: %(default)s]')
 parser.add_argument('--mpi',
 		action='store',
@@ -100,12 +100,14 @@ def main():
 	ctest = "ctest -V " 
 	ctest += "-C {0} ".format(args.build)
 	ctest += "-S {0}".format(script)
-	ctest += ",site={0}".format(args.site)
 	ctest += ",model={0}".format(args.model)
 	ctest += ",branch={0}".format(args.branch)
-	ctest += ",toolchain_name={0}".format(args.toolchain_name)
 	ctest += ",coverage={0}".format(args.coverage)
 	ctest += ",memcheck={0}".format(args.memcheck)
+	if args.site:
+		ctest += ",site={0}".format(args.site)
+	if args.toolchain_name:
+		ctest += ",toolchain_name={0}".format(args.toolchain_name)
 	if args.mpi > 0:
 		ctest += ",mpi={0}".format(args.mpi)
 	if args.omp > 0:
