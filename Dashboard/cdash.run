@@ -1,0 +1,153 @@
+#!/bin/sh -l
+#
+# Example PBS run file for testing a branch with different 
+# compilers and settings. Should be reimplemented in Python.
+#
+###-------- PBS parameters ----------
+#PBS -N cdash.run
+#PBS -o cdash.out 
+#PBS -e qsub.out
+#PBS -j oe
+#PBS -lnodes=c24-15:ppn=8
+#PBS -lwalltime=01:00:00
+#PBS -lpmem=1000MB
+###-------- end PBS parameters ----------
+
+[ "x$PROJECT_REPOSITORY" = "x" ] && \
+	PROJECT_REPOSITORY="https://git.example.com/example.git"
+export PROJECT_REPOSITORY
+
+model=Experimental
+build=Debug
+branch=master
+toolchain_name=Intel
+parallel=off
+memcheck=off
+coverage=off
+
+usage() {
+cat << EOF
+Usage: cdash.run [options] 
+   --build=[Debug*|Release]
+   --model=[Experimental*|Nightly|Continuous]
+   --branch=[master*]
+   --site="`hostname -s`.$USER"
+   --toolchain_name=[GNU|Intel|...]
+   --parallel=[on|off*]  
+   --coverage=[on|off*]
+   --memcheck=[on|off*]
+EOF
+exit 0
+}
+
+get_arg() {
+	echo "$*" | sed 's/--.*=//'
+}
+
+get_bool_arg() {
+	local arg=`echo "$*" | sed 's/--.*=//'`
+	case $arg in
+		on|ON|On) echo "on" ;;
+		off|OFF|Off) echo "off" ;;
+		true|TRUE|True|T) echo "on" ;;
+		false|FALSE|False|F) echo "off" ;;
+		yes|YES|Yes|Y) echo "on" ;;
+		no|NO|No|N) echo "off" ;;
+		*) echo "Invalid arg: Not a boolean!"; exit 1 ;;
+	esac
+	
+}
+
+parse_args () {
+	for i in $*; do
+		case $i in
+		   --build=*) build=`get_arg $i` ;;
+		   --model=*) model=`get_arg $i` ;;
+		   --branch=*) branch=`get_arg $i` ;;
+		   --site=*) site=`get_arg $i` ;;
+		   --toolchain_name=*) toolchain_name=`get_arg $i` ;;
+		   --parallel=*) parallel=`get_bool_arg $i` ;;
+		   --coverage=*) coverage=`get_bool_arg $i` ;;
+		   --memcheck=*) memcheck=`get_bool_arg $i` ;;
+			--help|-h|-?) usage; shift ;;
+			*) echo "Invalid option: $i"; exit 1 ;;
+		esac
+	done
+}
+
+run_dashboard() {
+local model=$model 
+local build=$build 
+local branch=$branch 
+local toolchain_name=$toolchain_name 
+local parallel=$parallel 
+local memcheck=$memcheck 
+local coverage=$coverage
+
+parse_args $*
+
+local ctest_cmd="ctest -V -C ${build} \
+-S $DASHBOARD_DIR/CDashTestBranch.cmake,\
+site=${site},\
+model=${model},\
+branch=${branch},\
+toolchain_name=${toolchain_name},\
+parallel=${parallel},\
+coverage=${coverage},\
+memcheck=${memcheck}"
+
+echo $ctest_cmd
+$ctest_cmd
+}
+
+if [ "x$PBS_JOBID" != "x" ]; then
+	[ "x$DASHBOARD_DIR" = "x" ] && DASHBOARD_DIR=$PBS_O_WORKDIR
+	case $PBS_SERVER in 
+		stallo*) 
+			site=stallo 
+			;;
+	esac
+
+else
+	[ "x$DASHBOARD_DIR" = "x" ] && DASHBOARD_DIR=`pwd`
+fi
+export DASHBOARD_DIR
+
+[ "x$site" = "x" ] && site=`hostname -s`
+site="$site.$USER"
+
+case $site in 
+	stallo*)
+	module load cmake
+	module load boost
+	module load eigen/3.0.0
+	module load google-test
+	module load valgrind
+	export BOOST_ROOT=$BOOSTHOME
+	export SETUP_HOST=stallo
+	export MPIEXEC_PREFLAGS="--mca btl self,tcp"
+	toolchain_name=Intel
+	;;
+esac
+
+parse_args $*
+cd $DASHBOARD_DIR
+
+if [ "x$PBS_JOBID" != "x" ]; then
+	run_dashboard --memcheck=on
+
+	export CXX=mpic++
+	export CC=mpicc
+	export FC=mpif90
+	run_dashboard --build=Release --parallel=on
+
+	export CXX=g++
+	export CC=gcc
+	export FC=gfortran
+	run_dashboard --toolchain_name=GNU --parallel=on --coverage=on --memcheck=on
+else
+	run_dashboard
+fi
+
+# ------ END  ------
+# vim:syntax=sh:filetype=sh

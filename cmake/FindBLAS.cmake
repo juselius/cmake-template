@@ -11,10 +11,9 @@
 #  BLAS_FOUND Defined if BLAS is available 
 #  HAVE_BLAS To be used in #ifdefs 
 #  BLAS_H Name of BLAS header file
+#
 # None of the above will be defined unless BLAS can be found.
 # 
-# This module accepts the COMPONENTS flag, whereby a specific (set) of BLAS 
-# implementation(s) can be requested (e.g. find_package(BLAS COMPONENTS MKL))
 #=============================================================================
 # Copyright 2011 Jonas Juselius <jonas.juselius@uit.no>
 #

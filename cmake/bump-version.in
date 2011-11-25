@@ -1,0 +1,189 @@
+#!@PYTHON_EXECUTABLE@
+#
+# Simple script to bump the version number before a release
+#
+# jonas juselius <jonas.juselius@uit.no>
+#
+# TODO: Docstrings
+#
+# vim:ft=python:
+
+import os
+import sys
+import string
+import re
+from optparse import OptionParser
+import subprocess 
+
+usage = '%prog {major}.{minor}.{patch}'
+
+project_version = "@PROJECT_VERSION@"
+current_version = map(int, string.split(project_version, '.'))
+
+version_file = open("@CMAKE_SOURCE_DIR@/cmake/ConfigProjectVersion.txt", 'r+')
+
+parser = OptionParser(usage, version="%prog {0}".format(project_version))
+parser.add_option('--force',
+		action='store_true',
+		dest='force',
+		default=False,
+		help='force version even if it is smaller [default: %default]')
+parser.add_option('--create-release',
+		action='store_true',
+		dest='release',
+		default=False,
+		help='create branch "release-{ver} and bump version" [default: %default]')
+parser.add_option('--create-hotfix',
+		action='store_true',
+		dest='hotfix',
+		default=False,
+		help='create branch "hotfix-{ver} and bump version" [default: %default]')
+parser.add_option('--commit',
+		action='store_true',
+		dest='commit',
+		default=False,
+		help='commit the new version [default: %default]')
+parser.add_option('--update-master',
+		action='store_true',
+		dest='update_master',
+		default=False,
+		help='merge with master and tag new release [default: %default]')
+
+(options, args) = parser.parse_args()
+
+def verror(ver):
+	print "Invalid version: {}".format(ver)
+	sys.exit(1)
+
+def parse_version(vstr):
+	ver = string.split(vstr, '.')
+	if len(ver) != 3:
+		verror(vstr)
+	for i in xrange(len(ver)):
+		try:
+			ver[i] = int(ver[i])
+		except:
+			verror(vstr)	
+	return ver
+
+def check_version(ver):
+	if options.force:
+		return True
+	vnew = 1000*ver[0] + 100*ver[1] + ver[2]
+	vold = 1000*version[0] + 100*version[1] + version[2]
+	if vnew < vold:
+		print "Version number {}.{}.{} < {}!".format(ver[0], ver[1], ver[2], 
+				project_version)
+		print "Use --force to update the version anyway"
+		sys.exit(1)
+
+def check_cmakelist(clist):
+	found = 0
+	for i in clist:
+		rex = re.compile('PROJECT_VERSION_(MAJOR|MINOR|PATCH)\s*\d+', re.I)
+		m = rex.search(i)
+		if m != None:
+			found += 1
+	if found == 3:
+		return True
+	return False
+
+def update_version(clist, ver):
+	major = re.compile(r'(PROJECT_VERSION_MAJOR)\s*(\d+)', re.I)
+	minor = re.compile(r'(PROJECT_VERSION_MINOR)\s*(\d+)', re.I)
+	patch = re.compile(r'(PROJECT_VERSION_PATCH)\s*(\d+)', re.I)
+	for i in xrange(len(clist)):
+		m = major.search(clist[i])
+		n = minor.search(clist[i])
+		p = patch.search(clist[i])
+		if m != None:
+			clist[i] = major.sub(r'\1 {}'.format(ver[0]), clist[i])
+		if n != None:
+			clist[i] = minor.sub(r'\1 {}'.format(ver[1]), clist[i])
+		if p != None:
+			clist[i] = patch.sub(r'\1 {}'.format(ver[2]), clist[i])
+	return clist
+	
+def new_branch(ver):
+	p = subprocess.Popen(['git', 'branch', '--no-color'],
+			stdin=subprocess.PIPE,
+			stdout=subprocess.PIPE)
+	if not ('* develop' in p.communicate()[0]):
+		print "Version bumps are only allowed on branch 'develop'!"
+		sys.exit(1)
+
+	if options.release:
+		branch = "release-"
+	elif options.hotfix:
+		branch = "hotfix-"
+	else:
+		return
+	branch += "{}.{}.{}".format(ver[0], ver[1], ver[2])
+	p = subprocess.Popen(['git', 'checkout', branch],
+			stdin=subprocess.PIPE,
+			stdout=subprocess.PIPE,
+			stderr=subprocess.STDOUT)
+	result = p.communicate()
+	if not 'error: pathspec' in result[0]:
+		print "Error: Branch {} already exists!".format(branch)
+		sys.exit(1)
+	p = subprocess.Popen('git checkout -b ' + branch, 
+			shell=True,
+			stdin=subprocess.PIPE,
+			stdout=subprocess.PIPE)
+	result = p.communicate()[0]
+	if 'Switched to branch' in result:
+		print "Error:  Could not create branch {}!".format(branch)
+		sys.exit(1)
+	return branch
+
+def commit_branch(ver):
+	commitmsg = "Bumped version from {} to {}.{}.{}".format(prjoect_version,
+														 ver[0], ver[1], ver[2])
+	p = subprocess.Popen(['git', 'commit', '-m', commitmsg],
+			stdin=subprocess.PIPE,
+			stdout=subprocess.PIPE)
+	p.communicate()[0]
+
+
+def update_master(ver):
+	pass
+	#check committed
+	#co master
+	#merge branch
+	#commit
+	#tag
+
+def main():
+	if len(args) != 1:
+		# user has given no arguments: print help and exit
+		print parser.format_help().strip()
+		sys.exit(1)
+	try:
+		cmake = open(version_file, 'r+')
+	except:
+		print "No CMakeLists.txt found in the current directory!"
+		sys.exit(1)
+	ver = parse_version(args[0])
+	check_version(ver)
+	branch = new_branch(ver)
+
+	clist = cmake.readlines()
+	if not check_cmakelist(clist):
+		print "CMakeList.txt does not contain version information!"
+		sys.exit(1)
+	clist = update_version(clist, ver)
+
+	cmake.seek(0)
+	cmake.writelines(clist)
+	cmake.close()
+
+	print "Files modified successfully. version bumped to {}".format(args[0]) 
+	
+	if options.commit:
+		commit_branch()
+	if options.update_master:
+		update_master(branch, ver)
+
+if __name__ == '__main__':
+	main()
