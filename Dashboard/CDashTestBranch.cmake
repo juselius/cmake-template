@@ -258,6 +258,10 @@ if (DEFINED TOOLCHAIN_NAME)
 	append_to_var(CTEST_BUILD_NAME "-${TOOLCHAIN_NAME}")
 endif()
 
+if (DEFINED CTEST_SITE)
+	set (SETUP_FLAGS ${SETUP_FLAGS} --host=${CTEST_SITE})
+endif()
+
 if (DEFINED CC)
 	set (SETUP_FLAGS ${SETUP_FLAGS} --cc=${CC})
 endif()
@@ -270,6 +274,7 @@ if (DEFINED FC)
 	set (SETUP_FLAGS ${SETUP_FLAGS} --fc=${FC})
 endif()
 
+message("${CTEST_SOURCE_DIRECTORY}/setup ${SETUP_FLAGS}")
 execute_process(
 	COMMAND ${CTEST_SOURCE_DIRECTORY}/setup ${SETUP_FLAGS}
     OUTPUT_VARIABLE setup_list

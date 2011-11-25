@@ -8,6 +8,7 @@
 import os
 import sys
 import string
+import re
 import subprocess
 from argparse import ArgumentParser
 
@@ -197,7 +198,7 @@ def gen_cmake_command():
 	return command
 
 def configure_host(host):
-	if host == 'stallo':
+	if re.match('stallo', host):
 		configure_stallo()
 	else:
 		print("Unknown host/system: {0}".format(host))
