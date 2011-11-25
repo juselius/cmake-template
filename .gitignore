@@ -1,0 +1,13 @@
+build/
+release/
+debug/
+cmake/bump-version
+Dashboard/cdash.run
+Dashboard/run_dashboard.py
+*.o
+*.mod
+*.d
+*.m
+*.swp
+*.a
+*.so

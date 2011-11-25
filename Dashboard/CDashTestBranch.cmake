@@ -136,11 +136,11 @@ foreach(arg ${arglist})
 		set_var_from_str(ENABLE_OMP ${arg})
 	endif()
 
-	if ("${arg}" MATCHES "memcheck=(no|off|false)")
+	if ("${arg}" MATCHES "memcheck=(no|off|false|False)")
 		set (ENABLE_MEMCHECK FALSE)
 	endif()
 
-	if ("${arg}" MATCHES "coverage=(no|off|false)")
+	if ("${arg}" MATCHES "coverage=(no|off|false|False)")
 		set (ENABLE_COVERAGE FALSE)
 	endif()
 
@@ -228,30 +228,30 @@ endfunction()
 macro(setup_cmake_env)
 get_build_name(CTEST_BUILD_NAME ${BRANCH})
 
-set (SETUP_FLAGS "--enable-tests --show")
+set (SETUP_FLAGS --enable-tests --show)
 
 if (${BUILD_TYPE} STREQUAL Debug)
-	set (SETUP_FLAGS "${SETUP_FLAGS} --debug")
+	set (SETUP_FLAGS ${SETUP_FLAGS} --debug)
 	append_to_var(CTEST_BUILD_NAME "-dbg")
 elseif (${BUILD_TYPE} STREQUAL Release)
-	set (SETUP_FLAGS "${SETUP_FLAGS} --release")
+	set (SETUP_FLAGS ${SETUP_FLAGS} --release)
 	append_to_var(CTEST_BUILD_NAME "-rel")
 endif()
 		
 if (ENABLE_MPI)
-	set (SETUP_FLAGS "${SETUP_FLAGS} --mpi")
+	set (SETUP_FLAGS ${SETUP_FLAGS} --mpi)
 	append_to_var(CTEST_BUILD_NAME "-mpi")
 	set(MPI_NUMPROC ${ENABLE_MPI})
 endif()
 
 if (ENABLE_OMP)
-	set (SETUP_FLAGS "${SETUP_FLAGS} --omp")
+	set (SETUP_FLAGS ${SETUP_FLAGS} --omp)
 	append_to_var(CTEST_BUILD_NAME "-omp")
 	set(OMP_NUM_THREADS ${ENABLE_OMP})
 endif()
 
 if (ENABLE_COVERAGE)
-	set (SETUP_FLAGS "${SETUP_FLAGS} --coverage")
+	set (SETUP_FLAGS ${SETUP_FLAGS} --coverage)
 endif()
 
 if (DEFINED TOOLCHAIN_NAME)
@@ -259,15 +259,15 @@ if (DEFINED TOOLCHAIN_NAME)
 endif()
 
 if (DEFINED CC)
-	set (SETUP_FLAGS "${SETUP_FLAGS} --cc=${CC}")
+	set (SETUP_FLAGS ${SETUP_FLAGS} --cc=${CC})
 endif()
 
 if (DEFINED CXX)
-	set (SETUP_FLAGS "${SETUP_FLAGS} --cxx=${CXX}")
+	set (SETUP_FLAGS ${SETUP_FLAGS} --cxx=${CXX})
 endif()
 
 if (DEFINED FC)
-	set (SETUP_FLAGS "${SETUP_FLAGS} --fc=${FC}")
+	set (SETUP_FLAGS ${SETUP_FLAGS} --fc=${FC})
 endif()
 
 execute_process(

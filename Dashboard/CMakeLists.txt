@@ -12,14 +12,14 @@ foreach(fname ${suppression_files})
 endforeach()
 
 configure_file(${CMAKE_SOURCE_DIR}/Dashboard/run_dashboard.py.in
-	${CMAKE_BINARY_DIR}/Dashboard/run_dashboard.py @ONLY
+	${CMAKE_SOURCE_DIR}/Dashboard/run_dashboard.py @ONLY
 	)
 execute_process(COMMAND 
-	chmod 755 ${CMAKE_BINARY_DIR}/Dashboard/run_dashboard.py OUTPUT_QUIET) 
+	chmod 755 ${CMAKE_SOURCE_DIR}/Dashboard/run_dashboard.py OUTPUT_QUIET) 
 
 configure_file(${CMAKE_SOURCE_DIR}/Dashboard/cdash.run.in
-	${CMAKE_BINARY_DIR}/Dashboard/cdash.run @ONLY
+	${CMAKE_SOURCE_DIR}/Dashboard/cdash.run @ONLY
 	)
 execute_process(COMMAND 
-	chmod 755 ${CMAKE_BINARY_DIR}/Dashboard/cdash.run OUTPUT_QUIET) 
+	chmod 755 ${CMAKE_SOURCE_DIR}/Dashboard/cdash.run OUTPUT_QUIET) 
 

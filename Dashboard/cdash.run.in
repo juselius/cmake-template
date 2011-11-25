@@ -32,19 +32,18 @@ case $site in
 esac
 
 if [ "x$PBS_JOBID" != "x" ]; then
+	$dashdir/run_dashboard.py
 	$dashdir/run_dashboard.py --memcheck=on
 
 	export CXX=mpic++
 	export CC=mpicc
 	export FC=mpif90
-	run_dashboard --build=Release --parallel=on
+	$dashdir/run_dashboard.py --build=Release --mpi=2 --omp=2
 
-	export CXX=g++
-	export CC=gcc
-	export FC=gfortran
-	run_dashboard --toolchain_name=GNU --parallel=on --coverage=on --memcheck=on
+	$dashdir/run_dashboard.py --toolchain_name=GNU --cc=gcc --cxx=g++ \
+		--fc=gfortran --coverage --memcheck
 else
-	./run_dashboard --
+	$dashdir/run_dashboard.py
 fi
 
 # ------ END  ------

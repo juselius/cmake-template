@@ -19,3 +19,15 @@ add_test(NAME ExampleTests
 	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/tests
 	)
 
+if (MPI_FOUND)
+	if (DEFINED ENV{MPIEXEC_PREFLAGS})
+		separate_arguments(args UNIX_COMMAND $ENV{MPIEXEC_PREFLAGS})
+		set (MPIEXEC_PREFLAGS ${args})
+		unset(args)
+	endif()
+	if (DEFINED MPI_NUMPROC OR DEFINED $ENV{MPI_NUMPROC})	 
+		set (MPIRUN ${MPIEXEC} ${MPIEXEC_PREFLAGS} 
+			${MPIEXEC_NUMPROC_FLAG} ${MPI_NUMPROC} 
+			)
+	endif()
+endif()

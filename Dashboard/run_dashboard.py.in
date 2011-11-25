@@ -11,7 +11,7 @@ import subprocess
 from argparse import ArgumentParser
 
 dashboard_dir='@DASHBOARD_DIR@'
-cdash_script='CDashTestBrach.cmake'
+cdash_script='CDashTestBranch.cmake'
 project_repository="@PROJECT_REPOSITORY@"
 project_name="@PROJECT_NAME@"
 
@@ -56,7 +56,7 @@ parser.add_argument('--fc',
 		action='store',
 		default=None,
 		help='set Fortran compiler name')
-parser.add_argument('--toolchain_name',
+parser.add_argument('--toolchain-name',
 		action='store',
 		default='gnu',
 		help='set toolchain [default: %(default)s]')
@@ -64,11 +64,13 @@ parser.add_argument('--mpi',
 		action='store',
 		type=int,
 		default=0,
+		metavar='N',
 		help='run tests using N MPI procs [default: %(default)s]')
 parser.add_argument('--omp',
 		action='store',
 		type=int,
 		default=0,
+		metavar='N',
 		help='run tests using N OpenMP threads [default: %(default)s]')
 parser.add_argument('--coverage',
 		action='store_true',
@@ -88,11 +90,11 @@ args = parser.parse_args()
 def main():
 	script = "{0}/{1}".format(dashboard_dir, cdash_script)
 
-	if not os.environ['PROJECT_NAME'] or args.project_name:
+	if not os.environ.has_key('PROJECT_NAME') or args.project_name:
 		os.environ['PROJECT_NAME'] = project_name
-	if not os.environ['PROJECT_REPOSITORY'] or args.project_repository:
+	if not os.environ.has_key('PROJECT_REPOSITORY') or args.project_repository:
 		os.environ['PROJECT_REPOSITORY'] = project_repository
-	if not os.environ['DASHBOARD_DIR'] or args.dashboard_dir:
+	if not os.environ.has_key('DASHBOARD_DIR') or args.dashboard_dir:
 		os.environ['DASHBOARD_DIR'] = dashboard_dir
 
 	ctest = "ctest -V " 
@@ -115,11 +117,11 @@ def main():
 	if args.fc:
 		ctest += ",fc={0}".format(args.fc)
 	
-	if not args.cc and os.environ['CC']:
+	if not args.cc and os.environ.has_key('CC'):
 		ctest += ",cc={0}".format(os.environ['CC'])
-	if not args.cxx and os.environ['CXX']:
+	if not args.cxx and os.environ.has_key('CXX'):
 		ctest += ",cxx={0}".format(os.environ['CXX'])
-	if not args.fc and os.environ['FC']:
+	if not args.fc and os.environ.has_key('FC'):
 		ctest += ",fc={0}".format(os.environ['FC'])
 
 	print ctest
