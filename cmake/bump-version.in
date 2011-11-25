@@ -53,7 +53,7 @@ parser.add_argument('--update-master',
 args = parser.parse_args()
 
 def verror(ver):
-	print "Invalid version: {}".format(ver)
+	print "Invalid version: {0}".format(ver)
 	sys.exit(1)
 
 def parse_version(vstr):
@@ -99,11 +99,11 @@ def update_version(clist, ver):
 		n = minor.search(clist[i])
 		p = patch.search(clist[i])
 		if m != None:
-			clist[i] = major.sub(r'\1 {}'.format(ver[0]), clist[i])
+			clist[i] = major.sub(r'\1 {0}'.format(ver[0]), clist[i])
 		if n != None:
-			clist[i] = minor.sub(r'\1 {}'.format(ver[1]), clist[i])
+			clist[i] = minor.sub(r'\1 {0}'.format(ver[1]), clist[i])
 		if p != None:
-			clist[i] = patch.sub(r'\1 {}'.format(ver[2]), clist[i])
+			clist[i] = patch.sub(r'\1 {0}'.format(ver[2]), clist[i])
 	return clist
 	
 def new_branch(ver):
@@ -120,14 +120,14 @@ def new_branch(ver):
 		branch = "hotfix-"
 	else:
 		return
-	branch += "{}.{}.{}".format(ver[0], ver[1], ver[2])
+	branch += "{0}.{1}.{2}".format(ver[0], ver[1], ver[2])
 	p = subprocess.Popen(['git', 'checkout', branch],
 			stdin=subprocess.PIPE,
 			stdout=subprocess.PIPE,
 			stderr=subprocess.STDOUT)
 	result = p.communicate()
 	if not 'error: pathspec' in result[0]:
-		print "Error: Branch {} already exists!".format(branch)
+		print "Error: Branch {0} already exists!".format(branch)
 		sys.exit(1)
 	p = subprocess.Popen('git checkout -b ' + branch, 
 			shell=True,
@@ -135,12 +135,12 @@ def new_branch(ver):
 			stdout=subprocess.PIPE)
 	result = p.communicate()[0]
 	if 'Switched to branch' in result:
-		print "Error:  Could not create branch {}!".format(branch)
+		print "Error:  Could not create branch {0}!".format(branch)
 		sys.exit(1)
 	return branch
 
 def commit_branch(ver):
-	commitmsg = "Bumped version from {} to {}.{}.{}".format(prjoect_version,
+	commitmsg = "Bumped version from {0} to {1}.{2}.{3}".format(prjoect_version,
 														 ver[0], ver[1], ver[2])
 	p = subprocess.Popen(['git', 'commit', '-m', commitmsg],
 			stdin=subprocess.PIPE,
@@ -176,7 +176,7 @@ def main():
 	cmake.writelines(clist)
 	cmake.close()
 
-	print "Files modified successfully. version bumped to {}".format(
+	print "Files modified successfully. version bumped to {0}".format(
 			args.ver[0]) 
 	
 	if args.commit:
