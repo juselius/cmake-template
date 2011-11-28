@@ -31,13 +31,13 @@ if (NETCDF_INCLUDES AND NETCDF_LIBRARIES)
 endif ()
 
 find_path (NETCDF_INCLUDES netcdf.h
-	HINTS NETCDF_ROOT ENV NETCDF_ROOT
+	HINTS ${NETCDF_ROOT} ENV NETCDF_ROOT
 	PATH_SUFFIXES include
 	)
 
 find_library (NETCDF_LIBRARIES_C 
 	NAMES netcdf
-	HINTS ENV NETCDF_ROOT
+	HINTS ${NETCDF_ROOT} ENV NETCDF_ROOT
 	PATH_SUFFIXES lib
 	)
 mark_as_advanced(NETCDF_LIBRARIES_C)
@@ -52,12 +52,12 @@ macro (NetCDF_check_interface lang header libs)
 	if (NETCDF_${lang})
 		find_path (NETCDF_INCLUDES_${lang} 
 			NAMES ${header}
-			HINTS ${NETCDF_INCLUDES} ENV NETCDF_ROOT
+			HINTS ${NETCDF_INCLUDES} ${NETCDF_ROOT} ENV NETCDF_ROOT
 			NO_DEFAULT_PATH
 			)
 		find_library (NETCDF_LIBRARIES_${lang} 
 			NAMES ${libs}
-			HINTS ${NetCDF_lib_dirs} ENV NETCDF_ROOT
+			HINTS ${NetCDF_lib_dirs} ${NETCDF_ROOT} ENV NETCDF_ROOT
 			NO_DEFAULT_PATH
 			)
 		mark_as_advanced (NETCDF_INCLUDES_${lang} NETCDF_LIBRARIES_${lang})
