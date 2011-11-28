@@ -8,6 +8,7 @@
 import os
 import sys
 import string
+import re
 import subprocess
 from argparse import ArgumentParser
 
@@ -33,7 +34,7 @@ group = parser.add_argument_group('Basic options')
 group.add_argument('--auto',
 		action='store_true',
 		default=False,
-		help='try to configure --fc, --cc, --cpp  automatically [default: %(default)s]')
+		help='try to configure --fc, --cc, --cxx  automatically [default: %(default)s]')
 group.add_argument('--fc',
 		action='store',
 		default=None,
@@ -44,16 +45,16 @@ group.add_argument('--cc',
 		default=None,
 		help='set the C compiler [default: pick automatically or based on CC=...]',
 		metavar='STRING')
-group.add_argument('--cpp',
+group.add_argument('--cxx',
 		action='store',
 		default=None,
 		help='set the C++ compiler [default: pick automatically or based on CXX=...]',
 		metavar='STRING')
-group.add_argument('--blas-dir',
+group.add_argument('--netcdf-dir',
 		action='store',
-		dest='blasdir',
+		dest='netcdfdir',
 		default=None,
-		help='directory containing BLAS libraries [default: pick automatically based on BLAS_ROOT (see INSTALL.rst)]',
+		help='directory containing NETCDF libraries [default: pick automatically based on NETCDF_ROOT (see INSTALL.rst)]',
 		metavar='PATH')
 group.add_argument('--mpi',
 		action='store_true',
@@ -89,6 +90,10 @@ group.add_argument('--debug',
 		action='store_true',
 		default=False,
 		help='build in debug mode (no optimization) [default: %(default)s]')
+group.add_argument('--enable-tests',
+		action='store_true',
+		default=False,
+		help='build test suite [default: %(default)s]')
 group.add_argument('--check',
 		action='store_true',
 		default=False,
@@ -144,19 +149,19 @@ def gen_cmake_command():
 			command += ' FC=%s' % args.fc
 		if args.cc:
 			command += ' CC=%s' % args.cc
-		if args.cpp:
-			command += ' CXX=%s' % args.cpp
+		if args.cxx:
+			command += ' CXX=%s' % args.cxx
 
 	if args.alternative_cmake: 
 		command += ' %s' % args.alternative_cmake
 	else:
 		command += ' cmake'
 
-	if args.blasdir:
-		if not os.path.exists(args.blasdir):
-			print("Specified BLAS directory does not exist!")
+	if args.netcdfdir:
+		if not os.path.exists(args.netcdfdir):
+			print("Specified NETCDF directory does not exist!")
 			sys.exit(1)
-		command += ' -DBLAS_ROOT="%s"' % args.blasdir
+		command += ' -DNETCDF_ROOT="%s"' % args.netcdfdir
 
 	# if fc starts with 'mpi' turn on MPI
 	if args.fc and (args.fc[:3] == 'mpi' or args.fc[:3] == 'MPI'):
@@ -178,6 +183,9 @@ def gen_cmake_command():
 	else:
 		command += ' -DCMAKE_BUILD_TYPE=Release'
 
+	if args.enable_tests:
+		command += ' -DENABLE_TESTS=1'
+
 	if args.cmake:
 		for definition in args.cmake:
 			command += ' -D%s' % definition
@@ -190,7 +198,7 @@ def gen_cmake_command():
 	return command
 
 def configure_host(host):
-	if host == 'stallo':
+	if re.match('stallo', host):
 		configure_stallo()
 	else:
 		print("Unknown host/system: {0}".format(host))
@@ -224,6 +232,8 @@ def save_setup_command(argv, build_path):
 	f.close()
 
 def setup_build_path(build_path, only_show_command):
+	if args.show:
+		return
 	if os.path.isdir(build_path):
 		if not only_show_command:
 			print('aborting setup - build directory %s exists already' % build_path)
@@ -266,13 +276,16 @@ def main():
 # host/system specific configurations
 
 def configure_stallo():
+	if not args.cc:
+		args.cc = 'icc'
+	if not args.cxx:
+		args.cxx = 'icpc'
 	if not args.fc:
+		args.fc = 'ifort'
+	if args.mpi:
 		args.fc = 'mpif90'
-		if not args.cc:
-			args.cc = 'mpicc'
-		if args.mpi:
-			args.fc = 'mpif90'
-			args.cc = 'mpicc'
+		args.cc = 'mpicc'
+		args.cxx = 'mpicxx'
 
 if __name__ == '__main__':
 	main()

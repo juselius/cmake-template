@@ -55,6 +55,7 @@ include_directories(${PROJECT_BINARY_DIR})
 add_subdirectory(src)
 
 if (ENABLE_TESTS)
+	set (PROJECT_REPOSITORY "https://git.example.com/example")
 	include(ConfigTesting)
 	add_subdirectory(tests)
 endif()

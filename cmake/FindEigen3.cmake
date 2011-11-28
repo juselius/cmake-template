@@ -54,16 +54,14 @@ macro(_eigen3_check_version)
 endmacro(_eigen3_check_version)
 
 if (EIGEN3_INCLUDE_DIR)
-
   # in cache already
   _eigen3_check_version()
   set(EIGEN3_FOUND ${EIGEN3_VERSION_OK})
 
 else (EIGEN3_INCLUDE_DIR)
   find_path(EIGEN3_INCLUDE_DIR NAMES signature_of_eigen3_matrix_library
-      PATHS
-      ${EIGEN3_ROOT}/include
-      PATH_SUFFIXES eigen3 eigen
+	  PATHS ${EIGEN3_ROOT} ENV EIGEN3_ROOT
+      PATH_SUFFIXES include/eigen3 include/eigen
 	  NO_DEFAULT_PATHS
     )
 

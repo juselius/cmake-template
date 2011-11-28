@@ -1,6 +1,6 @@
-# - Find a BLAS library 
+# - Find a BLAS library
 #
-# This module will first look in BLAS_ROOT before considering the default 
+# This module will first look in BLAS_ROOT before considering the default
 # system pahts.
 # The linker language can be defined by setting the varable BLAS_LANG
 #
@@ -8,8 +8,8 @@
 #
 #  BLAS_INCLUDE_DIRS Where to find blas.h (or equivalent)
 #  BLAS_LIBRARIES Libraries to link against to use BLAS
-#  BLAS_FOUND Defined if BLAS is available 
-#  HAVE_BLAS To be used in #ifdefs 
+#  BLAS_FOUND Defined if BLAS is available
+#  HAVE_BLAS To be used in #ifdefs
 #  BLAS_H Name of BLAS header file
 #
 # None of the above will be defined unless BLAS can be found.
@@ -130,9 +130,11 @@ macro(find_mkl)
 	if(${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")
             set(path_suffixes lib/intel64 lib/em64t)
             if(ENABLE_64BIT_INTEGERS)
-                set(blas_libs mkl_core mkl_intel_ilp64 mkl_sequential guide pthread m)
+                set(blas_libs mkl_core mkl_intel_ilp64 mkl_sequential 
+					guide pthread m)
             else()
-                set(blas_libs mkl_core mkl_intel_lp64 mkl_sequential guide pthread m)
+                set(blas_libs mkl_core mkl_intel_lp64 mkl_sequential 
+					guide pthread m)
             endif()
 	else()
 		set(path_suffixes lib/ia32 lib/32)
@@ -142,7 +144,7 @@ macro(find_mkl)
 	find_math_header(blas)
 	find_math_libs(blas)
 	if(blas_libraries)
-		set(blas_libraries -Wl,--start-group ${blas_libraries} -Wl,--end-group )
+		set(blas_libraries -Wl,--start-group ${blas_libraries} -Wl,--end-group)
 	endif()
 	cache_math_result(MKL blas)
 endmacro()

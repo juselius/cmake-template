@@ -14,15 +14,15 @@
 # Valid options are:
 #   branch=name
 #   model=(Experimental|Nightly|Continuous)
-#   parallel=(para|MPI|OpenMP)
 #   site=name
 #   toolchain_name=name (e.g. Intel, GNU)
+#   mpi=PROCS
+#   omp=THREADS
+#   cc=C compiler
+#   cxx=C++ compiler
+#   fc=Fortran compiler
 #   memcheck=(on|off)
 #   coverage(on|off)
-#
-#   The actual toolchain can be chosen by exporting CXX, CC and FC.
-#   For running test under MPI, the number of processors to use is set
-#   by exporting MPI_NUMPROC=8 (default is 2). 
 #
 # The actual tests runs are defined at the end of the script
 #
@@ -76,7 +76,8 @@ set(CTEST_UPDATE_COMMAND ${CTEST_GIT_COMMAND})
 # --- Defaults
 set (BRANCH master)
 set (TEST_MODEL Experimental)
-set (ENABLE_PARALLEL FALSE)
+set (ENABLE_MPI FALSE)
+set (ENABLE_OMP FALSE)
 set (ENABLE_MEMCHECK TRUE)
 set (ENABLE_COVERAGE TRUE)
 execute_process(COMMAND ${HOSTNAME_COMMAND} 
@@ -115,15 +116,31 @@ foreach(arg ${arglist})
 		set_var_from_str(TOOLCHAIN_NAME ${arg})
 	endif()
 
-	if ("${arg}" MATCHES "parallel=")
-		set_var_from_str(ENABLE_PARALLEL ${arg})
+	if ("${arg}" MATCHES "cxx=")
+		set_var_from_str(CXX ${arg})
 	endif()
 
-	if ("${arg}" MATCHES "memcheck=(no|off|false)")
+	if ("${arg}" MATCHES "cc=")
+		set_var_from_str(CC ${arg})
+	endif()
+
+	if ("${arg}" MATCHES "fc=")
+		set_var_from_str(FC ${arg})
+	endif()
+
+	if ("${arg}" MATCHES "mpi=")
+		set_var_from_str(ENABLE_MPI ${arg})
+	endif()
+
+	if ("${arg}" MATCHES "omp=")
+		set_var_from_str(ENABLE_OMP ${arg})
+	endif()
+
+	if ("${arg}" MATCHES "memcheck=(no|off|false|False)")
 		set (ENABLE_MEMCHECK FALSE)
 	endif()
 
-	if ("${arg}" MATCHES "coverage=(no|off|false)")
+	if ("${arg}" MATCHES "coverage=(no|off|false|False)")
 		set (ENABLE_COVERAGE FALSE)
 	endif()
 
@@ -211,38 +228,53 @@ endfunction()
 macro(setup_cmake_env)
 get_build_name(CTEST_BUILD_NAME ${BRANCH})
 
-set (SETUP_FLAGS "--enable-tests --show")
+set (SETUP_FLAGS --enable-tests --show)
 
 if (${BUILD_TYPE} STREQUAL Debug)
-	set (SETUP_FLAGS "${SETUP_FLAGS} --debug")
+	set (SETUP_FLAGS ${SETUP_FLAGS} --debug)
 	append_to_var(CTEST_BUILD_NAME "-dbg")
 elseif (${BUILD_TYPE} STREQUAL Release)
-	set (SETUP_FLAGS "${SETUP_FLAGS} --release")
+	set (SETUP_FLAGS ${SETUP_FLAGS} --release)
 	append_to_var(CTEST_BUILD_NAME "-rel")
 endif()
 		
-if ("${ENABLE_PARALLEL}" MATCHES "(OPENMP|OpenMP|OMP|omp)")
-	set (SETUP_FLAGS "${SETUP_FLAGS} --omp")
-	append_to_var(CTEST_BUILD_NAME "-OMP")
-elseif ("${ENABLE_PARALLEL}" MATCHES "(MPI|mpi)")
-	set (SETUP_FLAGS "${SETUP_FLAGS} --mpi")
-	append_to_var(CTEST_BUILD_NAME "-MPI")
-elseif ("${ENABLE_PARALLEL}" MATCHES "(PARA.*|para.*)")
-	set (SETUP_FLAGS "${SETUP_FLAGS} --para")
-	append_to_var(CTEST_BUILD_NAME "-PAR")
+if (ENABLE_MPI)
+	set (SETUP_FLAGS ${SETUP_FLAGS} --mpi)
+	append_to_var(CTEST_BUILD_NAME "-mpi")
+	set(MPI_NUMPROC ${ENABLE_MPI})
 endif()
-if (DEFINED ENV{MPI_NUMPROC})
-	set(MPI_NUMPROC $ENV{MPI_NUMPROC})
+
+if (ENABLE_OMP)
+	set (SETUP_FLAGS ${SETUP_FLAGS} --omp)
+	append_to_var(CTEST_BUILD_NAME "-omp")
+	set(OMP_NUM_THREADS ${ENABLE_OMP})
 endif()
 
 if (ENABLE_COVERAGE)
-	set (SETUP_FLAGS "${SETUP_FLAGS} --coverage")
+	set (SETUP_FLAGS ${SETUP_FLAGS} --coverage)
 endif()
 
 if (DEFINED TOOLCHAIN_NAME)
 	append_to_var(CTEST_BUILD_NAME "-${TOOLCHAIN_NAME}")
 endif()
 
+if (DEFINED CTEST_SITE)
+	set (SETUP_FLAGS ${SETUP_FLAGS} --host=${CTEST_SITE})
+endif()
+
+if (DEFINED CC)
+	set (SETUP_FLAGS ${SETUP_FLAGS} --cc=${CC})
+endif()
+
+if (DEFINED CXX)
+	set (SETUP_FLAGS ${SETUP_FLAGS} --cxx=${CXX})
+endif()
+
+if (DEFINED FC)
+	set (SETUP_FLAGS ${SETUP_FLAGS} --fc=${FC})
+endif()
+
+message("${CTEST_SOURCE_DIRECTORY}/setup ${SETUP_FLAGS}")
 execute_process(
 	COMMAND ${CTEST_SOURCE_DIRECTORY}/setup ${SETUP_FLAGS}
     OUTPUT_VARIABLE setup_list

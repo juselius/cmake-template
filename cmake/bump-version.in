@@ -110,8 +110,8 @@ def new_branch(ver):
 	p = subprocess.Popen(['git', 'branch', '--no-color'],
 			stdin=subprocess.PIPE,
 			stdout=subprocess.PIPE)
-	if not ('* develop' in p.communicate()[0]):
-		print "Version bumps are only allowed on branch 'develop'!"
+	if not args.force and not ('* develop' in p.communicate()[0]):
+		print "Version bumps are only allowed on branch 'develop'! Use --force to override."
 		sys.exit(1)
 
 	if args.release:
@@ -181,7 +181,7 @@ def main():
 	
 	if args.commit:
 		commit_branch()
-	if args.update-master:
+	if args.update_master:
 		update_master(branch, ver)
 
 if __name__ == '__main__':

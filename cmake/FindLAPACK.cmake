@@ -110,7 +110,6 @@ endmacro()
 
 macro(find_atlas)
 	set(lapack_libs lapack_atlas lapack)
-
 	set(path_suffixes include/atlas include)
 	find_math_header(lapack)
 	set(path_suffixes lib lib/atlas)
