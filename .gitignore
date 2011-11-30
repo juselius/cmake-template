@@ -3,7 +3,7 @@ release/
 debug/
 cmake/bump-version
 cdash/cdash.run
-cdash/run_dashboard.py
+cdash/cdash.py
 *.o
 *.mod
 *.d
