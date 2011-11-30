@@ -60,11 +60,19 @@ group.add_argument('--mpi',
 		action='store_true',
 		default=False,
 		help='build using MPI parallelization [default: %(default)s]')
+group.add_argument('--openmp',
+		action='store_true',
+		default=False,
+		help='enable OpenMP [default: %(default)s]')
+group.add_argument('--blas-dir',
+		action='store',
+		default=None,
+		help='directory containing BLAS libraries [default: pick automatically based on BLAS_ROOT (see INSTALL)]',
+		metavar='PATH')
 group.add_argument('--show',
 		action='store_true',
 		default=False,
 		help='show cmake command and exit [default: %(default)s]')
-parser.add_argument_group(group)
 
 group = parser.add_argument_group('Change default paths')
 group.add_argument('--build',
@@ -166,15 +174,25 @@ def gen_cmake_command():
 	# if fc starts with 'mpi' turn on MPI
 	if args.fc and (args.fc[:3] == 'mpi' or args.fc[:3] == 'MPI'):
 		args.mpi = True
+
 	if args.mpi:
 		command += ' -DENABLE_MPI=ON'
 
+	if args.openmp:
+		command += ' -DENABLE_OPENMP=ON'
+
+	if args.blas_dir:
+		command += ' -DBLAS_ROOT={0}'.format(args.blas_dir)
+
 	if args.check:
 		command += ' -DENABLE_BOUNDS_CHECK=ON'
+
 	if args.coverage:
 		command += ' -DENABLE_CODE_COVERAGE=ON'
+
 	if args.nochecks:
 		command += ' -DENABLE_SANITY_CHECKS=OFF'
+
 	if args.prefix:
 		command += ' -DCMAKE_INSTALL_PREFIX=' + args.prefix
 
@@ -196,13 +214,6 @@ def gen_cmake_command():
 	if args.show:
 		sys.exit()
 	return command
-
-def configure_host(host):
-	if re.match('stallo', host):
-		configure_stallo()
-	else:
-		print("Unknown host/system: {0}".format(host))
-		sys.exit(1)
 
 def print_build_help(build_path):
 	print('   configure step is done')
@@ -274,8 +285,16 @@ def main():
 		print_build_help(build_path)
 
 # host/system specific configurations
+def configure_host(host):
+	enforce = False
+	if re.match('myhost', host):
+		configure_myhost()
+	elif enforce:
+		print("Unknown host/system: {0}".format(host))
+		sys.exit(1)
 
-def configure_stallo():
+
+def configure_myhost():
 	if not args.cc:
 		args.cc = 'icc'
 	if not args.cxx:
