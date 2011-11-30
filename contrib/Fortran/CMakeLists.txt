@@ -42,7 +42,16 @@ if (ENABLE_BLAS)
 	endif()
 endif ()
 
-include_directories(${PROJECT_BINARY_DIR})
+#add_definitions(-DTHIS_IS_CMAKE_BUILD)
+
+set(CMAKE_Fortran_MODULE_DIRECTORY
+	${PROJECT_BINARY_DIR}/modules
+	)
+
+include_directories(
+	${PROJECT_BINARY_DIR}
+	${PROJECT_BINARY_DIR}/modules
+	)
 
 add_subdirectory(src)
 
