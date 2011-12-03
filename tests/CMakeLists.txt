@@ -1,5 +1,5 @@
 include_directories (
-	${CMAKE_SOURCE_DIR}/src
+	${PROJECT_SOURCE_DIR}/src
 	)
 
 add_custom_target(tests ALL 
@@ -7,16 +7,17 @@ add_custom_target(tests ALL
 	)
 
 add_executable(test.bin test.c)
+target_link_libraries(test.bin hello)
 
-configure_file(${CMAKE_SOURCE_DIR}/tests/test.sh.in
-	${CMAKE_BINARY_DIR}/tests/test.sh @ONLY
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/test.sh.in
+	${CMAKE_CURRENT_BINARY_DIR}/test.sh @ONLY
 	)
 execute_process(COMMAND 
-	chmod 755 ${CMAKE_BINARY_DIR}/tests/test.sh OUTPUT_QUIET) 
+	chmod 755 ${CMAKE_CURRENT_BINARY_DIR}/test.sh OUTPUT_QUIET) 
 
 add_test(NAME ExampleTests 
-	COMMAND ${CMAKE_BINARY_DIR}/tests/test.sh 
-	WORKING_DIRECTORY ${CMAKE_BINARY_DIR}/tests
+	COMMAND ${CMAKE_CURRENT_BINARY_DIR}/test.sh 
+	WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/tests
 	)
 
 if (MPI_FOUND)
