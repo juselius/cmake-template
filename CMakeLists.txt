@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 project(Example) 
 enable_language(CXX)
@@ -50,6 +50,19 @@ if (ENABLE_BLAS)
 	endif()
 endif ()
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
+        ${CMAKE_BINARY_DIR}/bin
+    )
+
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY
+        ${CMAKE_BINARY_DIR}/lib
+    )
+
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY
+        ${CMAKE_BINARY_DIR}/lib
+    )
+
+link_directories(${CMAKE_BINARY_DIR}/lib)
 include_directories(${PROJECT_BINARY_DIR})
 
 add_subdirectory(src)
@@ -67,6 +80,6 @@ configure_file (
 	${PROJECT_BINARY_DIR}/config.h
 	)
 
-if (EXISTS ${CMAKE_SOURCE_DIR}/cmake/ConfigPackaging.cmake)
+if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigPackaging.cmake)
 	include(ConfigPackaging) 
 endif()
