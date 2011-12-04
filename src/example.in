@@ -15,17 +15,17 @@ import sys, re, argparse, os, string, subprocess, tempfile
 sys.path.append(libdir)
 
 def main():
-	parser = argparse.ArgumentParser(description='Example wrapper')
-	parser.add_argument('-v', '--verbose', default=False,
-		action='store_true', help='Verbose output')
-	args = parser.parse_args()
+    parser = argparse.ArgumentParser(description='Example wrapper')
+    parser.add_argument('-v', '--verbose', default=False,
+        action='store_true', help='Verbose output')
+    args = parser.parse_args()
 
-	if args.verbose:
-		print "Revision: ", revision
-	p = subprocess.Popen(binexe)
-	sts = os.waitpid(p.pid, 0)[1]
-	return sts
+    if args.verbose:
+        print "Revision: ", revision
+    p = subprocess.Popen(binexe)
+    sts = os.waitpid(p.pid, 0)[1]
+    return sts
 
 if __name__ == '__main__':
-	main()
+    main()
 

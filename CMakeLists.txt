@@ -26,28 +26,28 @@ include(ConfigCCompilerFlags)
 #find_package(NetCDF)
 
 if (ENABLE_MPI)
-	find_package(MPI)
-	if (MPI_FOUND)
-		#find_package(Boost REQUIRED mpi)
-		set(HAVE_MPI TRUE)
-		include_directories(${MPI_INCLUDE_PATH})
-	endif()
+    find_package(MPI)
+    if (MPI_FOUND)
+        #find_package(Boost REQUIRED mpi)
+        set(HAVE_MPI TRUE)
+        include_directories(${MPI_INCLUDE_PATH})
+    endif()
 endif ()
 
 if (ENABLE_OPENMP)
-	find_package(OpenMP)
-	if (OPENMP_FOUND)
-		set(HAVE_OPENMP TRUE)
-		set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
-	endif()
+    find_package(OpenMP)
+    if (OPENMP_FOUND)
+        set(HAVE_OPENMP TRUE)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    endif()
 endif ()
 
 if (ENABLE_BLAS)
-	if (BLAS_TYPE)
-		find_package(BLAS COMPONENTS "${BLAS_TYPE}")
-	else()
-		find_package(BLAS)
-	endif()
+    if (BLAS_TYPE)
+        find_package(BLAS COMPONENTS "${BLAS_TYPE}")
+    else()
+        find_package(BLAS)
+    endif()
 endif ()
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
@@ -68,18 +68,18 @@ include_directories(${PROJECT_BINARY_DIR})
 add_subdirectory(src)
 
 if (ENABLE_TESTS)
-	set (PROJECT_REPOSITORY "https://git.example.com/example")
-	include(ConfigTesting)
-	add_subdirectory(tests)
+    set (PROJECT_REPOSITORY "https://git.example.com/example")
+    include(ConfigTesting)
+    add_subdirectory(tests)
 endif()
 
 include(ConfigGitRevision)
 
 configure_file (
-	${PROJECT_SOURCE_DIR}/config.h.in
-	${PROJECT_BINARY_DIR}/config.h
-	)
+    ${PROJECT_SOURCE_DIR}/config.h.in
+    ${PROJECT_BINARY_DIR}/config.h
+    )
 
 if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigPackaging.cmake)
-	include(ConfigPackaging) 
+    include(ConfigPackaging) 
 endif()
