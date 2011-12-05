@@ -44,14 +44,7 @@ endif ()
 
 #add_definitions(-DTHIS_IS_CMAKE_BUILD)
 
-set(CMAKE_Fortran_MODULE_DIRECTORY
-    ${PROJECT_BINARY_DIR}/modules
-    )
-
-include_directories(
-    ${PROJECT_BINARY_DIR}
-    ${PROJECT_BINARY_DIR}/modules
-    )
+include(CommonBuildTree)
 
 add_subdirectory(src)
 
