@@ -61,7 +61,7 @@ macro(find_math_libs _service)
     unset(_lib CACHE)
 endmacro()
 
-macro(cache_math_result math_type _service)
+macro(cache_math_result _math_type _service)
     string(TOUPPER ${_service} _SERVICE)
     string(TOUPPER ${_math_type} _MATH_TYPE)
     if (${_service}_h)
