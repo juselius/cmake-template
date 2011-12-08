@@ -16,13 +16,13 @@
 #   model=(Experimental|Nightly|Continuous)
 #   site=name
 #   toolchain_name=name (e.g. Intel, GNU)
-#   mpi=PROCS
-#   omp=THREADS
+#   mpi=(True|False)
+#   omp=(True|False)
 #   cc=C compiler
 #   cxx=C++ compiler
 #   fc=Fortran compiler
-#   memcheck=(on|off)
-#   coverage(on|off)
+#   memcheck=(True|False)
+#   coverage(True|False)
 #
 # The actual tests runs are defined at the end of the script
 #
@@ -241,13 +241,13 @@ endif()
 if (ENABLE_MPI)
     set (SETUP_FLAGS ${SETUP_FLAGS} --mpi)
     append_to_var(CTEST_BUILD_NAME "-mpi")
-    set(MPI_NUMPROC ${ENABLE_MPI})
+    #set(MPI_NUMPROC ${ENABLE_MPI})
 endif()
 
 if (ENABLE_OMP)
     set (SETUP_FLAGS ${SETUP_FLAGS} --omp)
     append_to_var(CTEST_BUILD_NAME "-omp")
-    set(OMP_NUM_THREADS ${ENABLE_OMP})
+    #set(OMP_NUM_THREADS ${ENABLE_OMP})
 endif()
 
 if (ENABLE_COVERAGE)
@@ -325,3 +325,4 @@ ctest_update()
 run_dashboard()
 ctest_submit()
 
+# vim:et:sw=4:ts=4:

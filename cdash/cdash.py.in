@@ -61,17 +61,13 @@ parser.add_argument('--toolchain-name',
         default=None,
         help='set toolchain [default: %(default)s]')
 parser.add_argument('--mpi',
-        action='store',
-        type=int,
-        default=0,
-        metavar='N',
-        help='run tests using N MPI procs [default: %(default)s]')
+        action='store_true',
+        default=False,
+        help='run tests using MPI [default: %(default)s]')
 parser.add_argument('--omp',
-        action='store',
-        type=int,
-        default=0,
-        metavar='N',
-        help='run tests using N OpenMP threads [default: %(default)s]')
+        action='store_true',
+        default=False,
+        help='run tests using OpenMP [default: %(default)s]')
 parser.add_argument('--coverage',
         action='store_true',
         default=False,
@@ -138,3 +134,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+# vim:et:sw=4:ts=4:
