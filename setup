@@ -152,13 +152,12 @@ def gen_cmake_command():
 
     command = ''
 
-    if not args.auto:
-        if args.fc:
-            command += ' FC=%s' % args.fc
-        if args.cc:
-            command += ' CC=%s' % args.cc
-        if args.cxx:
-            command += ' CXX=%s' % args.cxx
+    if args.fc:
+        command += ' FC=%s' % args.fc
+    if args.cc:
+        command += ' CC=%s' % args.cc
+    if args.cxx:
+        command += ' CXX=%s' % args.cxx
 
     if args.alternative_cmake: 
         command += ' %s' % args.alternative_cmake
@@ -276,6 +275,8 @@ def main():
     setup_build_path(build_path, args.show)
     if args.host:
         configure_host(args.host)
+    else:
+        configure_generic_gnu()
     command = gen_cmake_command()
     status = run_cmake(command, build_path)
 
@@ -288,19 +289,20 @@ def main():
 def configure_host(host):
     enforce = False
     if re.match('myhost', host):
-        configure_myhost()
+        configure_generic_gnu()
     elif enforce:
         print("Unknown host/system: {0}".format(host))
         sys.exit(1)
+    else:
+        configure_generic_gnu()
 
-
-def configure_myhost():
+def configure_generic_gnu():
     if not args.cc:
-        args.cc = 'icc'
+        args.cc = 'gcc'
     if not args.cxx:
-        args.cxx = 'icpc'
+        args.cxx = 'g++'
     if not args.fc:
-        args.fc = 'ifort'
+        args.fc = 'gfortran'
     if args.mpi:
         args.fc = 'mpif90'
         args.cc = 'mpicc'
