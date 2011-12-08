@@ -1,4 +1,5 @@
 include(LocalBuildTree)
+include(ConfigureScript)
 include_directories (${PROJECT_SOURCE_DIR}/src)
 
 add_custom_target(tests ALL 
@@ -9,19 +10,10 @@ add_executable(test.bin test.c)
 target_link_libraries(test.bin hello)
 
 # shell test script
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/test.sh.in
-    ${CMAKE_CURRENT_BINARY_DIR}/test.sh @ONLY
-    )
-execute_process(COMMAND 
-    chmod 755 ${CMAKE_CURRENT_BINARY_DIR}/test.sh OUTPUT_QUIET) 
+configure_script(test.sh)
 
 # Python test script
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/test.sh.in
-    ${CMAKE_CURRENT_BINARY_DIR}/test.sh @ONLY
-    )
-execute_process(COMMAND 
-    chmod 755 ${CMAKE_CURRENT_BINARY_DIR}/test.sh OUTPUT_QUIET) 
-
+configure_script(test.py)
 
 add_test(NAME ExampleTests 
     COMMAND ${CMAKE_CURRENT_BINARY_DIR}/test.sh 

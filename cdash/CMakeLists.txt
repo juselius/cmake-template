@@ -11,16 +11,8 @@ foreach(fname ${suppression_files})
     file(APPEND ${CMAKE_BINARY_DIR}/valgrind-suppressions.txt ${vgs})
 endforeach()
 
-configure_file(${CMAKE_SOURCE_DIR}/cdash/cdash.py.in
-    ${CMAKE_SOURCE_DIR}/cdash/cdash.py @ONLY
-    )
-execute_process(COMMAND 
-    chmod 755 ${CMAKE_SOURCE_DIR}/cdash/cdash.py OUTPUT_QUIET) 
-
-configure_file(${CMAKE_SOURCE_DIR}/cdash/cdash.run.in
-    ${CMAKE_SOURCE_DIR}/cdash/cdash.run @ONLY
-    )
-execute_process(COMMAND 
-    chmod 755 ${CMAKE_SOURCE_DIR}/cdash/cdash.run OUTPUT_QUIET) 
+include(ConfigureScript)
+configure_script(cdash.py)
+configure_scritp(cdash.run)
 
 # vim:et:sw=4:ts=4:
