@@ -1,0 +1,88 @@
+#!@PYTHON_EXECUTABLE@
+# vim:ft=python:
+#
+# jonas juselius <jonas.juselius@uit.no>
+#
+# Script wrapper for running "non-trivial" tests
+#
+
+import os
+import sys
+import string
+import re
+from argparse import ArgumentParser
+import subprocess
+
+if sys.version < '2.4':
+    print('requires python version >= 2.4')
+    sys.exit(1)
+
+mpirun = '@MPIRUN@'
+bindir = '@CMAKE_RUNTIME_OUTPUT_DIRECTORY@'
+work_dir = '@CMAKE_CURRENT_BINARY_DIR@'
+ref_dir = '@CMAKE_CURRENT_SOURCE_DIR@'
+project_version = '@PROJECT_VERSION@'
+
+parser = ArgumentParser(description="Run tests",
+        epilog="Version @PROJECT_VERSION@")
+parser.add_argument('test',
+        action='store',
+        nargs=1,
+        help='test name')
+parser.add_argument('--mpi',
+        action='store_true',
+        help='MPI run')
+parser.add_argument('--seq',
+        action='store_true',
+        help='sequential run')
+
+args = parser.parse_args()
+
+def run_test(prog, outfile=None):
+    if outfile is not None:
+        fout = open(outfile + '.out', 'w')
+        ferr = open(outfile + '.err', 'w')
+    else:
+        fout = sys.stdout
+        ferr = sys.stderr
+
+    cmd=[]
+    if args.mpi:
+        cmd=mpirun.split()
+    cmd += prog
+    print cmd
+    p = subprocess.Popen(cmd,
+            stdout=fout,
+            stderr=ferr)
+    result = p.wait()
+    if outfile is not None:
+        fout.close()
+        ferr.close()
+    if result != 0:
+        return False
+    return True
+
+def test_prog(prog):
+    cmd = [os.path.join(bindir, 'driver.py')]
+    cmd.append(os.path.join(bindir, prog))
+    return run_test(cmd)
+
+def main():
+    if not os.path.exists(work_dir):
+        print "No such directory: ", work_dir
+    os.chdir(work_dir)
+    if args.test[0] == 'test1':
+        result = test_prog('test1.bin')
+    elif args.test[0] == 'test2':
+        result = test_prog('test2.bin')
+    else:
+        print "Invalid test: ", args.name[0]
+        return False
+    return result
+
+if __name__ == '__main__':
+    if main():
+        sys.exit(0)
+    sys.exit(1)
+
+# vim:et:ts=4:sw=4:
