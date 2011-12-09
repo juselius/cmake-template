@@ -24,4 +24,8 @@
 #cmakedefine HAVE_NETCDF
 
 #cmakedefine HAVE_HDF5
+
+@DEFINE_FC_FUNC@
+@DEFINE_FC_FUNC_@
+
 #endif
