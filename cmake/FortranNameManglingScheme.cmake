@@ -56,7 +56,7 @@ ENDIF(CMAKE_BUILD_TYPE MATCHES "MinSizeRel")
 FILE(WRITE ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/CMakeLists.txt
     "cmake_minimum_required(VERSION 2.6)\n"
     "PROJECT(FortranTest Fortran)\n"
-    "SET(CMAKE_VERBOSE_MAKEFILE ON)\n"
+    "SET(CMAKE_VERBOSE_MAKEFILE OFF)\n"
     "SET(CMAKE_Fortran_FLAGS \"${TMP_Fortran_FLAGS}\")\n"
     "ADD_LIBRARY(flib ftest.f)\n"
     )
@@ -79,7 +79,7 @@ TRY_COMPILE(
     flib
     OUTPUT_VARIABLE MY_OUTPUT)
 
-message("${MY_OUTPUT}")
+#message("${MY_OUTPUT}")
 
 # Initialize the name mangling schemes for symbol names 
 # with and without underscores
@@ -98,7 +98,7 @@ IF(FTEST_OK)
     FILE(WRITE ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/CMakeLists.txt
         "cmake_minimum_required(VERSION 2.6)\n"
         "PROJECT(FortranTest C)\n"
-        "SET(CMAKE_VERBOSE_MAKEFILE ON)\n"
+        "SET(CMAKE_VERBOSE_MAKEFILE OFF)\n"
         "SET(CMAKE_C_FLAGS \"${TMP_C_FLAGS}\")\n"
         "ADD_EXECUTABLE(ctest1 ctest1.c)\n"
         "FIND_LIBRARY(FLIB flib ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp)\n"
@@ -156,7 +156,7 @@ IF(FTEST_OK)
     FILE(WRITE ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/CMakeLists.txt
         "cmake_minimum_required(VERSION 2.6)\n"
         "PROJECT(FortranTest C)\n"
-        "SET(CMAKE_VERBOSE_MAKEFILE ON)\n"
+        "SET(CMAKE_VERBOSE_MAKEFILE OFF)\n"
         "SET(CMAKE_C_FLAGS \"${TMP_C_FLAGS}\")\n"
         "ADD_EXECUTABLE(ctest2 ctest2.c)\n"
         "FIND_LIBRARY(FLIB flib ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp)\n"
@@ -225,11 +225,10 @@ SET(DEFINE_FC_FUNC ${CPP_macro}
     CACHE INTERNAL "CPP macro for name mangling scheme of symbols without underscores")
 
 IF(SCHEME_NO_UNDERSCORES)
-    MESSAGE("Name mangling scheme for symbol names without underscores:\n"
-        "   mysub  ->  ${SCHEME_NO_UNDERSCORES}\n"
-        "   ${DEFINE_FC_FUNC}")
+    MESSAGE("-- Name mangling scheme for symbol names without underscores: " 
+        "mysub  ->  ${SCHEME_NO_UNDERSCORES}")
 ELSE(SCHEME_NO_UNDERSCORES)
-    MESSAGE("Unable to determine name mangling scheme for symbol names without underscores!")
+    MESSAGE("-- Unable to determine name mangling scheme for symbol names without underscores!")
 ENDIF(SCHEME_NO_UNDERSCORES)
 
 # If the name mangling scheme of symbol names containing underscores
@@ -269,9 +268,8 @@ SET(DEFINE_FC_FUNC_ "${CPP_macro}"
     CACHE INTERNAL "CPP macro for name mangling scheme of symbols with underscores")
 
 IF(SCHEME_WITH_UNDERSCORES)
-    MESSAGE("Name mangling scheme for symbol names with underscores:\n"
-        "   my_sub ->  ${SCHEME_WITH_UNDERSCORES}\n"
-        "   ${DEFINE_FC_FUNC_}")
+    MESSAGE("-- Name mangling scheme for symbol names with underscores: "
+        "my_sub ->  ${SCHEME_WITH_UNDERSCORES}")
 ELSE(SCHEME_WITH_UNDERSCORES)
-    MESSAGE("Unable to determine name mangling scheme for symbol names with underscores!")
+    MESSAGE("-- Unable to determine name mangling scheme for symbol names with underscores!")
 ENDIF(SCHEME_WITH_UNDERSCORES)
