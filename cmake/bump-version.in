@@ -64,7 +64,7 @@ def parse_version(vstr):
         try:
             ver[i] = int(ver[i])
         except:
-            verror(vstr)	
+            verror(vstr)    
     return ver
 
 def check_version(ver):
