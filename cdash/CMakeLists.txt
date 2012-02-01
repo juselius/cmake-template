@@ -12,7 +12,7 @@ foreach(fname ${suppression_files})
 endforeach()
 
 include(ConfigureScript)
-configure_script(cdash.py)
-configure_scritp(cdash.run)
+configure_script(cdash.py.in ${CMAKE_CURRENT_SOURCE_DIR}/cdash.py)
+configure_script(cdash.run.in ${CMAKE_CURRENT_SOURCE_DIR}/cdash.run)
 
 # vim:et:sw=4:ts=4:
