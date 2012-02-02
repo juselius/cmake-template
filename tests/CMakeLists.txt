@@ -10,10 +10,10 @@ add_executable(test.bin test.c)
 target_link_libraries(test.bin hello)
 
 # shell test script
-configure_script(test.sh)
+configure_script(test.sh.in ${CMAKE_CURRENT_BINARY_DIR}/test.sh)
 
 # Python test script
-configure_script(test.py)
+configure_script(test.py.in ${CMAKE_CURRENT_BINARY_DIR}/test.py)
 
 add_test(NAME ExampleTests 
     COMMAND ${CMAKE_CURRENT_BINARY_DIR}/test.sh 

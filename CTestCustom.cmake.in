@@ -2,13 +2,10 @@
 
 set(CTEST_MEMORYCHECK_COMMAND_OPTIONS "--leak-check=full")
 set(CTEST_MEMORYCHECK_SUPPRESSIONS_FILE 
-    @CMAKE_BINARY_DIR@/valgrind.supp)
+    @CMAKE_BINARY_DIR@/valgrind-suppressions.txt)
 
 set (CTEST_CUSTOM_WARNING_EXCEPTION
     ${CTEST_CUSTOM_WARNING_EXCEPTION}
-    "external/"
-    "boost/archive/basic_binary_oarchive.hpp:.* warning:"
-    "Eigen/.*: warning"
     "unused parameter"
     "warning: feupdateenv is not implemented"
     )
