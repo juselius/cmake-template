@@ -28,6 +28,7 @@
 #  License text for the above reference.)
 
 include(MathLibFunctions)
+include(FindPackageMessage)
 
 if (EXISTS $ENV{MATH_ROOT})
     if (NOT DEFINED BLAS_ROOT})
@@ -152,6 +153,7 @@ endmacro()
 find_blas()
 
 if(BLAS_LIBRARIES)
+   find_package_message(BLAS "Found BLAS: ${BLAS_TYPE}" "[${BLAS_LIBRARIES}]")
    set(BLAS_FOUND TRUE)
 endif()
 

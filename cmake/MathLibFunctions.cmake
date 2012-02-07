@@ -14,6 +14,7 @@
 #  License text for the above reference.)
 
 include(FindPackageHandleStandardArgs)
+include(FindPackageMessage)
 
 if (NOT MATH_LANG)
     set(MATH_LANG C)
@@ -61,9 +62,8 @@ macro(find_math_libs _service)
     unset(_lib CACHE)
 endmacro()
 
-macro(cache_math_result _math_type _service)
+macro(cache_math_result math_type _service)
     string(TOUPPER ${_service} _SERVICE)
-    string(TOUPPER ${_math_type} _MATH_TYPE)
     if (${_service}_h)
         set(${_SERVICE}_H ${${_service}_h})
     endif()
@@ -80,19 +80,17 @@ macro(cache_math_result _math_type _service)
     set(${_SERVICE}_FIND_QUIETLY TRUE)
     if (${_SERVICE}_H)
         find_package_handle_standard_args(${_SERVICE}
-            "Could NOT find ${_MATH_TYPE} ${_SERVICE}"
+            "Could NOT find ${math_type} ${_SERVICE}"
             ${_SERVICE}_INCLUDE_DIRS ${_SERVICE}_LIBRARIES ${_SERVICE}_H)
     else()
         find_package_handle_standard_args(${_SERVICE}
-            "Could NOT find ${_MATH_TYPE} ${_SERVICE}" ${_SERVICE}_LIBRARIES)
+            "Could NOT find ${math_type} ${_SERVICE}" ${_SERVICE}_LIBRARIES)
     endif()
 
     if (${_SERVICE}_FOUND)
-        set(DETECTED_MATH_VENDOR ${_MATH_TYPE} CACHE STRING
-            "Detected math vendor."
-            )
-        message("-- ${DETECTED_MATH_VENDOR} ${_SERVICE} found (${${_SERVICE}_LIBRARIES})")
-        add_definitions(-DHAVE_${DETECTED_MATH_VENDOR}_${_SERVICE})
+        set(${_SERVICE}_TYPE ${math_type} PARENT_SCOPE) 
+
+        add_definitions(-DHAVE_${math_type}_${_SERVICE})
         set(HAVE_${_SERVICE} ON CACHE INTERNAL 
             "Defined if ${_SERVICE} is available"
             )
