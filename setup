@@ -2,8 +2,8 @@
 # vim:ft=python
 #
 # primitive frontend to cmake
-# (c) Radovan Bast <radovan.bast@uit.no> 
-# (c) Jonas Juselius <jonas.juselius@uit.no> 
+# (c) Radovan Bast <radovan.bast@uit.no>
+# (c) Jonas Juselius <jonas.juselius@uit.no>
 # licensed under the GNU Lesser General Public License
 
 import os
@@ -164,7 +164,7 @@ def gen_cmake_command():
     if args.cxx:
         command += ' CXX=%s' % args.cxx
 
-    if args.alternative_cmake: 
+    if args.alternative_cmake:
         command += ' %s' % args.alternative_cmake
     else:
         command += ' cmake'
