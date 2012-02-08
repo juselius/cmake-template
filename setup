@@ -118,6 +118,10 @@ group.add_argument('--nochecks',
         action='store_true',
         default=False,
         help='disable compatibility checks [default: %(default)s]')
+group.add_argument('--static',
+        action='store_true',
+        default=False,
+        help='link statically [default: %(default)s]')
 group.add_argument('-D',
         action="append",
         dest='define',
@@ -195,6 +199,9 @@ def gen_cmake_command():
 
     if args.nochecks:
         command += ' -DENABLE_SANITY_CHECKS=OFF'
+
+    if args.static:
+        command += ' -DENABLE_STATIC_LINKING=ON'
 
     if args.prefix:
         command += ' -DCMAKE_INSTALL_PREFIX=' + args.prefix
