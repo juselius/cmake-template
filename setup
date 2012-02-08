@@ -178,9 +178,10 @@ def gen_cmake_command():
             sys.exit(1)
         command += ' -DNETCDF_ROOT="%s"' % args.netcdf_dir
 
-    # if fc starts with 'mpi' turn on MPI
-    if args.fc and (args.fc[:3] == 'mpi' or args.fc[:3] == 'MPI'):
-        args.enable_mpi = True
+    if args.fc and (os.path.basename(args.fc)[:2].lower() == 'mp'):
+        # if fc starts with 'mp' turn on mpi
+        # it is possible to call compilers with long paths
+            args.enable_mpi = True
 
     if args.enable_mpi:
         command += ' -DENABLE_MPI=ON'
