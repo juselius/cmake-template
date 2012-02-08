@@ -79,7 +79,6 @@ group.add_argument('--show',
 group = parser.add_argument_group('Change default paths')
 group.add_argument('--prefix',
         action='store',
-        dest='prefix',
         default=None,
         help='set the install path for make install [default: %(default)s]',
         metavar='PATH')
