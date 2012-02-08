@@ -53,11 +53,6 @@ group.add_argument('--cxx',
         default=None,
         help='set the C++ compiler [default: pick automatically or based on CXX=...]',
         metavar='STRING')
-group.add_argument('--netcdf-dir',
-        action='store',
-        default=None,
-        help='directory containing NETCDF libraries [default: pick automatically based on NETCDF_ROOT (see INSTALL.rst)]',
-        metavar='PATH')
 group.add_argument('--enable-mpi',
         action='store_true',
         default=False,
@@ -66,6 +61,11 @@ group.add_argument('--enable-openmp',
         action='store_true',
         default=False,
         help='enable OpenMP [default: %(default)s]')
+group.add_argument('--netcdf-dir',
+        action='store',
+        default=None,
+        help='directory containing NETCDF libraries [default: pick automatically based on NETCDF_ROOT (see INSTALL.rst)]',
+        metavar='PATH')
 group.add_argument('--blas-dir',
         action='store',
         default=None,
