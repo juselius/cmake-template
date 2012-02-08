@@ -31,7 +31,7 @@ parser = ArgumentParser(description="Setup build configurations.")
 
 # define options
 
-parser.add_argument('build-dir', nargs='?',
+parser.add_argument('builddir', nargs='?',
         action='store',
         default=default_path,
         help='build directory [default: %(default)s]',
@@ -275,7 +275,7 @@ def run_cmake(command, build_path):
 
 def main():
     check_cmake_exists()
-    build_path = args.build_dir
+    build_path = args.builddir
     if not configure_host():
         configure_default_compilers()
     command = gen_cmake_command()
