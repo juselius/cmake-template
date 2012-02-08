@@ -120,7 +120,7 @@ group.add_argument('--nochecks',
         help='disable compatibility checks [default: %(default)s]')
 group.add_argument('-D',
         action="append",
-        dest='cmake',
+        dest='define',
         default=[],
         help='forward directly to cmake (example: -D ENABLE_THIS=1 -D ENABLE_THAT=1); \
                 you can also forward CPP defintions all the way to the program \
@@ -204,8 +204,8 @@ def gen_cmake_command():
     else:
         command += ' -DCMAKE_BUILD_TYPE=Release'
 
-    if args.cmake:
-        for definition in args.cmake:
+    if args.define:
+        for definition in args.define:
             command += ' -D%s' % definition
 
     if args.enable_tests:
