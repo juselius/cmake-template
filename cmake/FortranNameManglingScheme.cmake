@@ -1,4 +1,4 @@
-# Attempt to automatically determine the Fortran name-mangling scheme. 
+# Attempt to automatically determine the Fortran name-mangling scheme.
 # We do this by:
 #
 #  1) creating a library from a Fortran source file which defines a function "mysub"
@@ -6,14 +6,14 @@
 #     function using various possible schemes (6 different schemes, corresponding
 #     to all combinations lower/upper case and none/one/two underscores)
 #
-# Note that, since names of symbols with and without underscore may be mangled 
+# Note that, since names of symbols with and without underscore may be mangled
 # differently (e.g. gforran mangles mysub to mysub_ and my_sub to my_sub__), we have
 # to consider both cases. The two name mangling schemes are encoded in the cached
 # variables SCHEME_NO_UNDERSCORES and SCHEME_WITH_UNDERSCORES.
 #
 # Once the name mangling schemes are determined, we use them to define two C
 # preprocessor macros, FC_FUNC and FC_FUNC_, corresponding to the two cases:
-# symbols with names not containing underscores and symbols with names containing 
+# symbols with names not containing underscores and symbols with names containing
 # underscores. For example, if using gfortran the definitions of these two macros will be:
 #     #define FC_FUNC(name,NAME) name ## _
 #     #define FC_FUNC_(name,NAME) name ## __
@@ -25,7 +25,7 @@
 ENABLE_LANGUAGE(Fortran)
 
 # Make sure that the following tests use the C and Fortran flags corresponding
-# to the current build type. These flags are stored in the variables TMP_C_FLAGS 
+# to the current build type. These flags are stored in the variables TMP_C_FLAGS
 # and TMP_Fortran_FLAGS, respectively, and are used in the generated CMakeLists files.
 IF(NOT CMAKE_BUILD_TYPE)
     SET(TMP_C_FLAGS       ${CMAKE_C_FLAGS})
@@ -79,11 +79,11 @@ TRY_COMPILE(
     flib
     OUTPUT_VARIABLE MY_OUTPUT)
 
-# Initialize the name mangling schemes for symbol names 
+# Initialize the name mangling schemes for symbol names
 # with and without underscores
-SET(SCHEME_NO_UNDERSCORES "" 
+SET(SCHEME_NO_UNDERSCORES ""
     CACHE INTERNAL "Name mangling scheme (symbol names without underscores)")
-SET(SCHEME_WITH_UNDERSCORES "" 
+SET(SCHEME_WITH_UNDERSCORES ""
     CACHE INTERNAL "Name mangling scheme (symbol names with underscores)")
 
 # Continue only if we were successful in creating the "flib" library
@@ -110,7 +110,7 @@ IF(FTEST_OK)
 
     # We will attempt to sucessfully generate the "ctest" executable as long as
     # there still are entries in the "options" list
-    WHILE(${iopt} LESS ${imax})   
+    WHILE(${iopt} LESS ${imax})
 
         # Get the current list entry (current scheme)
         LIST(GET options ${iopt} opt)
@@ -139,14 +139,14 @@ IF(FTEST_OK)
         # exit the while loop.
         # Otherwise, increment the counter "iopt" and go back in the while loop.
         IF(CTEST_OK)
-            SET(SCHEME_NO_UNDERSCORES ${opt} 
+            SET(SCHEME_NO_UNDERSCORES ${opt}
                 CACHE INTERNAL "Name mangling scheme (symbol names without underscores)")
             SET(iopt ${imax})
         ELSE(CTEST_OK)
             MATH(EXPR iopt ${iopt}+1)
         ENDIF(CTEST_OK)
 
-    ENDWHILE(${iopt} LESS ${imax})   
+    ENDWHILE(${iopt} LESS ${imax})
 
     # CASE 2: symbol names WITH undersores
     # ------------------------------------
@@ -164,7 +164,7 @@ IF(FTEST_OK)
     LIST(LENGTH options imax)
     SET(iopt 0)
 
-    WHILE(${iopt} LESS ${imax})   
+    WHILE(${iopt} LESS ${imax})
         LIST(GET options ${iopt} opt)
         FILE(WRITE ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/ctest2.c
             "int main(){${opt}();return(0);}\n")
@@ -176,13 +176,13 @@ IF(FTEST_OK)
             OUTPUT_VARIABLE MY_OUTPUT)
         FILE(REMOVE_RECURSE ${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/CMakeTmp/CMakeFiles)
         IF(CTEST_OK)
-            SET(SCHEME_WITH_UNDERSCORES ${opt} 
+            SET(SCHEME_WITH_UNDERSCORES ${opt}
                 CACHE INTERNAL "Name mangling scheme (symbol names with underscores)")
             SET(iopt ${imax})
         ELSE(CTEST_OK)
             MATH(EXPR iopt ${iopt}+1)
         ENDIF(CTEST_OK)
-    ENDWHILE(${iopt} LESS ${imax})   
+    ENDWHILE(${iopt} LESS ${imax})
 
 ENDIF(FTEST_OK)
 
@@ -199,7 +199,7 @@ IF(SCHEME_NO_UNDERSCORES)
 
     IF(SCHEME_NO_UNDERSCORES MATCHES "mysub_")
         SET(CPP_macro "#define FC_FUNC(name,NAME) name ## _")
-    ENDIF(SCHEME_NO_UNDERSCORES MATCHES "mysub_")      
+    ENDIF(SCHEME_NO_UNDERSCORES MATCHES "mysub_")
 
     IF(SCHEME_NO_UNDERSCORES MATCHES "mysub__")
         SET(CPP_macro "#define FC_FUNC(name,NAME) name ## __")
@@ -223,7 +223,7 @@ SET(DEFINE_FC_FUNC ${CPP_macro}
     CACHE INTERNAL "CPP macro for name mangling scheme of symbols without underscores")
 
 #IF(SCHEME_NO_UNDERSCORES)
-#    MESSAGE("-- Name mangling scheme for symbol names without underscores: " 
+#    MESSAGE("-- Name mangling scheme for symbol names without underscores: "
 #        "mysub  ->  ${SCHEME_NO_UNDERSCORES}")
 #ELSE(SCHEME_NO_UNDERSCORES)
 #    MESSAGE("-- Unable to determine name mangling scheme for symbol names without underscores!")
@@ -242,7 +242,7 @@ IF(SCHEME_WITH_UNDERSCORES)
 
     IF(SCHEME_WITH_UNDERSCORES MATCHES "my_sub_")
         SET(CPP_macro "#define FC_FUNC_(name,NAME) name ## _")
-    ENDIF(SCHEME_WITH_UNDERSCORES MATCHES "my_sub_")      
+    ENDIF(SCHEME_WITH_UNDERSCORES MATCHES "my_sub_")
 
     IF(SCHEME_WITH_UNDERSCORES MATCHES "my_sub__")
         SET(CPP_macro "#define FC_FUNC_(name,NAME) name ## __")
@@ -262,7 +262,7 @@ IF(SCHEME_WITH_UNDERSCORES)
 
 ENDIF(SCHEME_WITH_UNDERSCORES)
 
-SET(DEFINE_FC_FUNC_ "${CPP_macro}" 
+SET(DEFINE_FC_FUNC_ "${CPP_macro}"
     CACHE INTERNAL "CPP macro for name mangling scheme of symbols with underscores")
 
 #IF(SCHEME_WITH_UNDERSCORES)
