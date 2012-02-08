@@ -103,7 +103,6 @@ group.add_argument('--release',
         action='store_false',
         dest='debug',
         help='build in release mode (full optimization) [default: %(default)s]')
-
 group.add_argument('--enable-tests',
         action='store_true',
         default=False,
