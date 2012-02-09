@@ -4,6 +4,7 @@ import sys
 import datetime
 
 s = []
+s.append(['User (who compiled) '    , r'@USER_NAME@@@HOST_NAME@'       ])
 s.append(['System'                  , r'@CMAKE_SYSTEM@'               ])
 s.append(['Processor'               , r'@CMAKE_SYSTEM_PROCESSOR@'     ])
 s.append(['Internal math'           , r'@ENABLE_INTERNAL_MATH@'       ])

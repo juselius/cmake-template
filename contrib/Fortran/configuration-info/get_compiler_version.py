@@ -1,19 +1,29 @@
 #!/usr/bin/env python
 
 import sys
+import os
 import subprocess
 
 if len(sys.argv) == 1:
     sys.exit('call script with argument')
 
-compiler_name = sys.argv[1].split('/')[-1]
+(head,tail)=os.path.split(sys.argv[1])
+#compiler_name = sys.argv[1].split('/')[-1]
+compiler_name = tail
 
 command_d = {}
 
 command_d['mpif90']   = 'mpif90   --version'
-command_d['gfortran'] = 'gfortran --version'
-command_d['gfortran44'] = 'gfortran44 --version'
+
+# GNU, gfortran
+command_d['gfortran']     = 'gfortran --version'
+command_d['gfortran.exe'] = 'gfortran.exe --version'
+command_d['gfortran44']   = 'gfortran44 --version'
+
+
 command_d['f95']      = 'f95      --version'
+
+# G95
 command_d['g95']      = 'g95      --version'
 command_d['ifort']    = 'ifort    --version'
 command_d['pgf90']    = 'pgf90    -V'
@@ -21,6 +31,9 @@ command_d['xlf']      = 'xlf      -qversion'
 
 command_d['mpicc']    = 'mpicc    --version'
 command_d['gcc']      = 'gcc      --version'
+command_d['gcc.exe']  = 'gcc.exe  --version'
+
+
 command_d['gcc44']    = 'gcc44    --version'
 command_d['icc']      = 'icc      --version'
 command_d['pgcc']     = 'pgcc     -V'
