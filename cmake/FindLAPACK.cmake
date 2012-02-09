@@ -138,7 +138,7 @@ endmacro()
 find_lapack()
 
 if(LAPACK_LIBRARIES)
-   find_package_message(LAPACK "Found LAPACK: ${LAPACK_TYPE}" 
+   find_package_message(LAPACK "Found LAPACK: ${LAPACK_TYPE}"
        "[${LAPACK_LIBRARIES}]"
        )
    set(LAPACK_FOUND TRUE)
