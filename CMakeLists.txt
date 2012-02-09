@@ -4,6 +4,10 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 project(Example) 
 enable_language(CXX)
 
+set (PROJECT_VERSION_MAJOR 0)
+set (PROJECT_VERSION_MINOR 0)
+set (PROJECT_VERSION_PATCH 0)
+
 option(ENABLE_TESTS "Enable test suite" ON)
 option(ENABLE_GTEST "Enable Googel-test" OFF)
 option(ENABLE_BLAS "Use BLAS backend for linear algebra" ON)
@@ -13,8 +17,7 @@ option(ENABLE_CODE_COVERAGE "Compile with code coverage turned on" OFF)
 
 include(ConfigProjectVersion)
 include(ConfigSafeGuards)
-include(ConfigCXXCompilerFlags)
-include(ConfigCCompilerFlags)
+include(ConfigCompilerFlags)
 
 #set (NETCDF_CXX YES)
 #set(Boost_USE_MULTITHREADED OFF)
@@ -67,6 +70,13 @@ configure_file (
     ${PROJECT_BINARY_DIR}/config.h
     )
 
-if (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/cmake/ConfigPackaging.cmake)
-    include(ConfigPackaging) 
-endif()
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "")
+set(CPACK_PACKAGE_VENDOR "")
+set(CPACK_PACKAGE_CONTACT "")
+set(CPACK_PACKAGE_EXECUTABLES "" "Description")
+set(CPACK_PACKAGE_URL "http://example.com")
+set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/INSTALL.rst)
+set(CPACK_RESOURCE_FILE_README ${CMAKE_CURRENT_SOURCE_DIR}/README.rst)
+set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/COPYING)
+set(CPACK_GENERATOR TGZ DEB RPM)
+include(ConfigPackaging) 
