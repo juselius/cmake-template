@@ -53,23 +53,36 @@ group.add_argument('--cxx',
         default=None,
         help='set the C++ compiler [default: pick automatically or based on CXX=...]',
         metavar='STRING')
+group.add_argument('--show',
+        action='store_true',
+        default=False,
+        help='show cmake command and exit [default: %(default)s]')
 group.add_argument('--enable-mpi',
-        action='store_true',
-        default=False,
-        help='build using MPI parallelization [default: %(default)s]')
+        nargs='?',
+        action='store',
+        choices=('on','off'),
+        default='on',
+        const='on',
+        help='enable MPI [default: %(default)s]')
 group.add_argument('--enable-openmp',
-        action='store_true',
-        default=False,
+        nargs='?',
+        action='store',
+        choices=('on','off'),
+        default='on',
+        const='on',
         help='enable OpenMP [default: %(default)s]')
+group.add_argument('--enable-blas',
+        nargs='?',
+        action='store',
+        choices=('on','off'),
+        default='on',
+        const='on',
+        help='enable BLAS [default: %(default)s]')
 group.add_argument('--blas-dir',
         action='store',
         default=None,
         help='directory containing BLAS libraries [default: pick automatically based on BLAS_ROOT (see INSTALL)]',
         metavar='PATH')
-group.add_argument('--show',
-        action='store_true',
-        default=False,
-        help='show cmake command and exit [default: %(default)s]')
 
 group = parser.add_argument_group('Change default paths')
 group.add_argument('--prefix',
@@ -98,8 +111,11 @@ group.add_argument('--release',
         dest='debug',
         help='build in release mode (full optimization) [default: %(default)s]')
 group.add_argument('--enable-tests',
-        action='store_true',
-        default=False,
+        nargs='?',
+        action='store',
+        choices=('on','off'),
+        default='on',
+        const='on',
         help='build test suite [default: %(default)s]')
 group.add_argument('--check',
         action='store_true',
@@ -170,13 +186,12 @@ def gen_cmake_command():
     if args.fc and (os.path.basename(args.fc)[:2].lower() == 'mp'):
         # if fc starts with 'mp' turn on mpi
         # it is possible to call compilers with long paths
-            args.enable_mpi = True
+            args.enable_mpi = 'on'
 
-    if args.enable_mpi:
-        command += ' -DENABLE_MPI=ON'
-
-    if args.enable_openmp:
-        command += ' -DENABLE_OPENMP=ON'
+    command += ' -DENABLE_MPI={0}'.format(args.enable_mpi.upper())
+    command += ' -DENABLE_OPENMP={0}'.format(args.enable_openmp.upper())
+    command += ' -DENABLE_BLAS={0}'.format(args.enable_blas.upper())
+    command += ' -DENABLE_TESTS={0}'.format(args.enable_tests.upper())
 
     if args.blas_dir:
         command += ' -DBLAS_ROOT={0}'.format(args.blas_dir)
