@@ -68,12 +68,18 @@ parser.add_argument('--toolchain-name',
         default=None,
         help='set toolchain [default: %(default)s]')
 parser.add_argument('--enable-mpi',
-        action='store_true',
-        default=False,
+        nargs='?',
+        action='store',
+        choices=('on','off'),
+        default='off',
+        const='on',
         help='enable MPI [default: %(default)s]')
 parser.add_argument('--enable-openmp',
-        action='store_true',
-        default=False,
+        nargs='?',
+        action='store',
+        choices=('on','off'),
+        default='off',
+        const='on',
         help='enable OpenMP [default: %(default)s]')
 parser.add_argument('--coverage',
         action='store_true',
@@ -105,6 +111,8 @@ def main():
     ctest += "-S {0}".format(script)
     ctest += ",model={0}".format(args.model)
     ctest += ",branch={0}".format(args.branch)
+    ctest += ",mpi={0}".format(args.enable_mpi)
+    ctest += ",openmp={0}".format(args.enable_openmp)
     if args.site:
         ctest += ",site={0}".format(args.site)
     if args.toolchain_name:
@@ -113,10 +121,6 @@ def main():
         ctest += ",coverage=on"
     if args.memcheck:
         ctest += ",memcheck=on"
-    if args.enable_mpi:
-        ctest += ",mpi=on"
-    if args.enable_openmp:
-        ctest += ",openmp=on"
     if args.cc:
         ctest += ",cc={0}".format(args.cc)
     if args.cxx:
