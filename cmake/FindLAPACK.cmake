@@ -10,7 +10,6 @@
 #  LAPACK_LIBRARIES Libraries to link against to use LAPACK
 #  LAPACK_FOUND Defined if LAPACK is available
 #  HAVE_LAPACK To be used in #ifdefs
-#  LAPACK_H Name of LAPACK header file
 #
 # None of the above will be defined unless LAPACK can be found.
 #
@@ -52,10 +51,6 @@ if (NOT DEFINED LAPACK_ROOT})
 endif()
 
 # Default names for the headers
-if (MATH_LANG STREQUAL "C")
-    set(lapack_h clapack.h)
-endif()
-set(lapack_libs lapack)
 
 if (LAPACK_INCLUDE_DIRS AND LAPACK_LIBRARIES)
   set(LAPACK_FIND_QUIETLY TRUE)
@@ -90,7 +85,7 @@ function(find_lapack)
         elseif (${lapack} STREQUAL "ACML")
             find_acml()
         else()
-            find_default()
+            find_generic()
         endif()
         if (LAPACK_FOUND)
             break()
@@ -98,57 +93,89 @@ function(find_lapack)
     endforeach()
 endfunction()
 
-macro(find_default)
-    set(lapack_libs lapack)
-    set(path_suffixes lib)
-    find_math_header(lapack)
-    find_math_libs(lapack)
-    cache_math_result(default lapack)
+macro(find_generic)
+    if (MATH_LANG STREQUAL "C")
+        find_math_header(lapack clapack.h)
+    endif()
+    find_math_libs(lapack lapack)
+    cache_math_result(lapack generic)
 endmacro()
 
 macro(find_acml)
-    set(lapack_libs acml)
-    set(path_suffixes lib libso)
-    find_math_header(lapack)
-    find_math_libs(lapack)
-    cache_math_result(ACML lapack)
+    set(MATH_LIBRARY_PATH_SUFFIXES libso)
+    set(MATH_INCLUDE_PATH_SUFFIXES)
+    if (MATH_LANG STREQUAL "C")
+        find_math_header(lapack clapack.h)
+    endif()
+    find_math_libs(lapack acml)
+    cache_math_result(lapack ACML)
 endmacro()
 
 macro(find_atlas)
-    set(lapack_libs lapack_atlas lapack)
-    set(path_suffixes include/atlas include)
-    find_math_header(lapack)
-    set(path_suffixes atlas lib/atlas lib/atlas-base lib)
-    find_math_libs(lapack)
-    cache_math_result(Atlas lapack)
+    set(MATH_LIBRARY_PATH_SUFFIXES 
+        atlas atlas-base atlas-base/atlas)
+    set(MATH_INCLUDE_PATH_SUFFIXES atlas)
+
+    if (MATH_LANG STREQUAL "C")
+        find_math_header(lapack clapack.h)
+        find_math_libs(lapack lapack_atlas lapack)
+    endif()
+    find_math_libs(lapack lapack_atlas lapack)
+    cache_math_result(lapack Atlas) 
 endmacro()
 
 macro(find_mkl _name)
+    set(MATH_INCLUDE_PATH_SUFFIXES)
+    if (MATH_LANG STREQUAL "C")
+        find_math_header(lapack mkl_clapack.h)
+    endif()
+    if (MATH_LANG STREQUAL "C")
+        find_math_header(lapack mkl_clapack.h)
+    endif()
     if(${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")
-        set(path_suffixes lib/intel64 lib/em64t)
+        set(MATH_LIBRARY_PATH_SUFFIXES intel64 em64t)
+        if(ENABLE_64BIT_INTEGERS)
+            set(lapack_libs mkl_core mkl_intel_ilp64 mkl_sequential
+                guide pthread m)
+        else()
+            set(lapack_libs mkl_core mkl_intel_lp64 mkl_sequential
+                guide pthread m)
+        endif()
     else()
-        set(path_suffixes lib/ia32 lib/32)
+        set(MATH_LIBRARY_PATH_SUFFIXES ia32 32)
+        set(lapack_libs mkl_core mkl_intel mkl_sequential guide pthread m)
     endif()
-    set(lapack_libs ${_name})
+    find_math_libs(lapack ${lapack_libs})
 
-    find_math_header(lapack)
-    find_math_libs(lapack)
-
-    if(lapack_libraries)
-        set(lapack_libraries
-            -Wl,--start-group ${lapack_libraries} -Wl,--end-group )
+    # Newer MKL versions don't have libguide
+    if (NOT LAPACK_LIBRARIES)
+        if(${CMAKE_HOST_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+            set(MATH_LIBRARY_PATH_SUFFIXES intel64 em64t)
+            if(ENABLE_64BIT_INTEGERS)
+                set(lapack_libs mkl_core mkl_intel_ilp64 mkl_sequential
+                    pthread m)
+            else()
+                set(lapack_libs mkl_core mkl_intel_lp64 mkl_sequential
+                    pthread m)
+            endif()
+        else()
+            set(MATH_LIBRARY_PATH_SUFFIXES ia32 32)
+            set(lapack_libs mkl_core mkl_intel mkl_sequential guide pthread m)
+        endif()
+        find_math_libs(lapack ${lapack_libs})
     endif()
-    cache_math_result(MKL lapack)
+
+    if (LAPACK_LIBRARIES)
+        set(LAPACK_LIBRARIES 
+            -Wl,--start-group ${LAPACK_LIBRARIES} -Wl,--end-group)
+    endif()
+    cache_math_result(lapack MKL)
+    unset(lapack_libs)
 endmacro()
 
 find_lapack()
-
-if(LAPACK_LIBRARIES)
+if(LAPACK_FOUND)
    find_package_message(LAPACK "Found LAPACK: ${LAPACK_TYPE}"
-       "[${LAPACK_LIBRARIES}]"
-       )
-   set(LAPACK_FOUND TRUE)
+       "[${LAPACK_LIBRARIES}]")
 endif()
 
-unset(lapack_h)
-unset(lapack_libs)
