@@ -16,13 +16,13 @@
 #   model=(Experimental|Nightly|Continuous)
 #   site=name
 #   toolchain_name=name (e.g. Intel, GNU)
-#   mpi=(True|False)
-#   omp=(True|False)
 #   cc=C compiler
 #   cxx=C++ compiler
 #   fc=Fortran compiler
-#   memcheck=(True|False)
-#   coverage(True|False)
+#   mpi=(on|off)
+#   openmp=(on|off)
+#   memcheck=(on|off)
+#   coverage(on|off)
 #
 # The actual tests runs are defined at the end of the script
 #
@@ -72,6 +72,15 @@ find_program(UNAME NAMES uname)
 find_program(HOSTNAME_COMMAND NAMES hostname)
 
 set(CTEST_UPDATE_COMMAND ${CTEST_GIT_COMMAND})
+
+include(ProcessorCount)
+ProcessorCount(NCORES)
+if(NOT NCORES EQUAL 0)
+    set(CTEST_BUILD_FLAGS -j${NCORES})
+    #set(ctest_test_args ${ctest_test_args} PARALLEL_LEVEL ${N})
+else()
+    set(NCORES 1)
+endif()
 
 # --- Defaults
 set (BRANCH master)
@@ -132,7 +141,7 @@ foreach(arg ${arglist})
         set_var_from_str(ENABLE_MPI ${arg})
     endif()
 
-    if ("${arg}" MATCHES "omp=")
+    if ("${arg}" MATCHES "openmp=")
         set_var_from_str(ENABLE_OMP ${arg})
     endif()
 
@@ -239,15 +248,13 @@ elseif (${BUILD_TYPE} STREQUAL Release)
 endif()
         
 if (ENABLE_MPI)
-    set (SETUP_FLAGS ${SETUP_FLAGS} --mpi)
+    set (SETUP_FLAGS ${SETUP_FLAGS} --enable-mpi)
     append_to_var(CTEST_BUILD_NAME "-mpi")
-    #set(MPI_NUMPROC ${ENABLE_MPI})
 endif()
 
 if (ENABLE_OMP)
-    set (SETUP_FLAGS ${SETUP_FLAGS} --omp)
+    set (SETUP_FLAGS ${SETUP_FLAGS} --enable-openmp)
     append_to_var(CTEST_BUILD_NAME "-omp")
-    #set(OMP_NUM_THREADS ${ENABLE_OMP})
 endif()
 
 if (ENABLE_COVERAGE)
@@ -274,7 +281,6 @@ if (DEFINED FC)
     set (SETUP_FLAGS ${SETUP_FLAGS} --fc=${FC})
 endif()
 
-message("${CTEST_SOURCE_DIRECTORY}/setup ${SETUP_FLAGS}")
 execute_process(
     COMMAND ${CTEST_SOURCE_DIRECTORY}/setup ${SETUP_FLAGS}
     OUTPUT_VARIABLE setup_list
@@ -301,14 +307,15 @@ endmacro()
 # -- Run the dashboard
 # -------------------------------------------------------------------------
 macro(run_dashboard)
+message("${CTEST_SOURCE_DIRECTORY}/setup ${SETUP_FLAGS}")
 ctest_configure()
 ctest_build()
-ctest_test()
+ctest_test(PARALLEL_LEVEL ${NCORES})
 if (ENABLE_COVERAGE AND CTEST_COVERAGE_COMMAND)
     ctest_coverage()
 endif ()
 if (ENABLE_MEMCHECK AND CTEST_MEMORYCHECK_COMMAND)
-    ctest_memcheck()
+    ctest_memcheck(PARALLEL_LEVEL ${NCORES})
 endif ()
 endmacro()
 
