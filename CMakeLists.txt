@@ -60,7 +60,7 @@ add_subdirectory(src)
 if (ENABLE_TESTS)
     set (PROJECT_REPOSITORY "https://git.example.com/example")
     include(ConfigTesting)
-    add_subdirectory(tests)
+    add_subdirectory(test)
 endif()
 
 include(ConfigGitRevision)
@@ -80,3 +80,5 @@ set(CPACK_RESOURCE_FILE_README ${CMAKE_CURRENT_SOURCE_DIR}/README.rst)
 set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/COPYING)
 set(CPACK_GENERATOR TGZ DEB RPM)
 include(ConfigPackaging) 
+
+# vim:ft=cmake

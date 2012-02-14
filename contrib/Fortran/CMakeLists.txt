@@ -1,8 +1,12 @@
 cmake_minimum_required(VERSION 2.8)
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_SOURCE_DIR}/cmake)
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 
 project(Example) 
 enable_language(Fortran)
+
+set (PROJECT_VERSION_MAJOR 0)
+set (PROJECT_VERSION_MINOR 0)
+set (PROJECT_VERSION_PATCH 0)
 
 option(ENABLE_TESTS "Enable test suite" ON)
 option(ENABLE_BLAS "Use BLAS backend for linear algebra" ON)
@@ -51,7 +55,7 @@ add_subdirectory(src)
 if (ENABLE_TESTS)
     set (PROJECT_REPOSITORY "https://git.example.com/example")
     include(ConfigTesting)
-    add_subdirectory(tests)
+    add_subdirectory(test)
 endif()
 
 include(ConfigGitRevision)
@@ -61,8 +65,15 @@ configure_file (
     ${PROJECT_BINARY_DIR}/config.h
     )
 
-if (EXISTS ${CMAKE_SOURCE_DIR}/cmake/ConfigPackaging.cmake)
-    include(ConfigPackaging) 
-endif()
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "")
+set(CPACK_PACKAGE_VENDOR "")
+set(CPACK_PACKAGE_CONTACT "")
+set(CPACK_PACKAGE_EXECUTABLES "" "Description")
+set(CPACK_PACKAGE_URL "http://example.com")
+set(CPACK_PACKAGE_DESCRIPTION_FILE ${CMAKE_CURRENT_SOURCE_DIR}/INSTALL.rst)
+set(CPACK_RESOURCE_FILE_README ${CMAKE_CURRENT_SOURCE_DIR}/README.rst)
+set(CPACK_RESOURCE_FILE_LICENSE ${CMAKE_CURRENT_SOURCE_DIR}/COPYING)
+set(CPACK_GENERATOR TGZ DEB RPM)
+include(ConfigPackaging) 
 
 # vim:ft=cmake
