@@ -1,5 +1,3 @@
-include(SaveCompilerFlags)
-
 if (NOT DEFINED DEFAULT_C_FLAGS_SET)
 if (CMAKE_COMPILER_IS_GNUCC)
     set (CMAKE_C_FLAGS "-Wall -Wno-sign-compare")

@@ -1,3 +1,5 @@
+include(SaveCompilerFlags)
+
 if (CMAKE_C_COMPILER_WORKS)
     include(${PROJECT_SOURCE_DIR}/cmake/compilers/CFlags.cmake)
 endif()

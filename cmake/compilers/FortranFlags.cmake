@@ -1,5 +1,3 @@
-include(SaveCompilerFlags)
-
 if (NOT DEFINED DEFAULT_Fortran_FLAGS_SET)
 if(CMAKE_Fortran_COMPILER_ID MATCHES GNU) # this is gfortran
     set(CMAKE_Fortran_FLAGS         "-cpp")
