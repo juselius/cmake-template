@@ -3,7 +3,7 @@
 # Example shell script wrapper for running "non-trivial" tests
 #
 
-cd @CMAKE_BINARY_DIR@/tests
+cd @CMAKE_BINARY_DIR@/test
 [ ! -d out ] && mkdir out
 echo "@CMAKE_BINARY_DIR@ " > out/test.out
 ./test.bin >> out/test.out
