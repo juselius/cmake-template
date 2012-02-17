@@ -61,21 +61,21 @@ group.add_argument('--enable-mpi',
         nargs='?',
         action='store',
         choices=('on','off'),
-        default='on',
+        default='off',
         const='on',
         help='enable MPI [default: %(default)s]')
 group.add_argument('--enable-openmp',
         nargs='?',
         action='store',
         choices=('on','off'),
-        default='on',
+        default='off',
         const='on',
         help='enable OpenMP [default: %(default)s]')
 group.add_argument('--enable-blas',
         nargs='?',
         action='store',
         choices=('on','off'),
-        default='on',
+        default='off',
         const='on',
         help='enable BLAS [default: %(default)s]')
 group.add_argument('--blas-dir',
@@ -183,9 +183,11 @@ def gen_cmake_command():
     else:
         command += ' cmake'
 
-    if args.fc and (os.path.basename(args.fc)[:2].lower() == 'mp'):
-        # if fc starts with 'mp' turn on mpi
-        # it is possible to call compilers with long paths
+    # if compiler starts with 'mp' turn on mpi
+    # it is possible to call compilers with long paths
+    if args.cc and (os.path.basename(args.cc)[:2].lower() == 'mp') or \
+        args.cxx and (os.path.basename(args.cxx)[:2].lower() == 'mp') or \
+        args.fc and (os.path.basename(args.fc)[:2].lower() == 'mp'):
             args.enable_mpi = 'on'
 
     command += ' -DENABLE_MPI={0}'.format(args.enable_mpi.upper())
@@ -330,7 +332,7 @@ def configure_default_compilers():
         args.cxx = 'g++'
     if not args.fc:
         args.fc = 'gfortran'
-    if args.enable_mpi:
+    if args.enable_mpi == 'on':
         args.fc = 'mpif90'
         args.cc = 'mpicc'
         args.cxx = 'mpicxx'
