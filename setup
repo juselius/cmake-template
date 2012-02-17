@@ -20,11 +20,6 @@ if sys.version < '2.4':
 root_directory = os.path.realpath(__file__)[:-5]
 default_path = root_directory + 'build/'
 
-# define example usage
-
-usage = '''
-  Example: ./%prog --fc=gfortran --cc=gcc'''
-
 # initialize parser
 
 parser = ArgumentParser(description="Setup build configurations.")
@@ -74,11 +69,6 @@ group.add_argument('--enable-blas',
         default='off',
         const='on',
         help='enable BLAS [default: %(default)s]')
-group.add_argument('--blas-dir',
-        action='store',
-        default=None,
-        help='directory containing BLAS libraries [default: pick automatically based on BLAS_ROOT (see INSTALL)]',
-        metavar='PATH')
 group.add_argument('--enable-lapack',
         nargs='?',
         action='store',
@@ -86,6 +76,11 @@ group.add_argument('--enable-lapack',
         default='off',
         const='on',
         help='enable LAPACK [default: %(default)s]')
+group.add_argument('--blas-dir',
+        action='store',
+        default=None,
+        help='directory containing BLAS libraries [default: pick automatically based on BLAS_ROOT (see INSTALL)]',
+        metavar='PATH')
 group.add_argument('--lapack-dir',
         action='store',
         default=None,
