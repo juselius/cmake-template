@@ -53,10 +53,6 @@ group.add_argument('--cxx',
         default=None,
         help='set the C++ compiler [default: pick automatically or based on CXX=...]',
         metavar='STRING')
-group.add_argument('--show',
-        action='store_true',
-        default=False,
-        help='show cmake command and exit [default: %(default)s]')
 group.add_argument('--enable-mpi',
         nargs='?',
         action='store',
@@ -83,6 +79,10 @@ group.add_argument('--blas-dir',
         default=None,
         help='directory containing BLAS libraries [default: pick automatically based on BLAS_ROOT (see INSTALL)]',
         metavar='PATH')
+group.add_argument('--show',
+        action='store_true',
+        default=False,
+        help='show cmake command and exit [default: %(default)s]')
 
 group = parser.add_argument_group('Change default paths')
 group.add_argument('--prefix',
@@ -125,6 +125,10 @@ group.add_argument('--coverage',
         action='store_true',
         default=False,
         help='enable code coverage [default: %(default)s]')
+group.add_argument('--profiling',
+        action='store_true',
+        default=False,
+        help='enable profiling [default: %(default)s]')
 group.add_argument('--nochecks',
         action='store_true',
         default=False,
@@ -203,6 +207,9 @@ def gen_cmake_command():
 
     if args.coverage:
         command += ' -DENABLE_CODE_COVERAGE=ON'
+
+    if args.profiling:
+        command += ' -DENABLE_PROFILING=ON'
 
     if args.nochecks:
         command += ' -DENABLE_SANITY_CHECKS=OFF'
