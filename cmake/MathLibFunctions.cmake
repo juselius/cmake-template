@@ -43,7 +43,7 @@ endmacro()
 
 macro(find_math_libs _service)
     string(TOUPPER ${_service} _SERVICE)
-    if(${_SERVICE}_LIBRARIES)
+    if(${_SERVICE}_FOUND)
         return()
     endif()
     set(_lib)
