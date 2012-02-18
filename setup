@@ -263,14 +263,6 @@ def print_build_help(build_path):
     print('   $ ccmake ' + root_directory)
     print('   $ make')
 
-def gen_reconfigure_script(command, build_path):
-    file_name = os.path.join(build_path, 'reconfigure')
-    f = open(file_name, 'w')
-    f.write('#!/bin/sh \n')
-    f.write('%s' % command)
-    f.close()
-    os.system('chmod 700 %s' % file_name)
-
 def save_setup_command(argv, build_path):
     file_name = os.path.join(build_path, 'setup_command')
     f = open(file_name, 'w')
@@ -315,7 +307,6 @@ def main():
     status = run_cmake(command, build_path)
 
     if not 'Configuring incomplete' in status:
-        gen_reconfigure_script(command, build_path)
         save_setup_command(sys.argv, build_path)
         print_build_help(build_path)
 
