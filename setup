@@ -280,7 +280,8 @@ def setup_build_path(build_path, only_show_command):
                     os.unlink(fname)
             else:
                 print('aborting setup - build directory %s exists already' % build_path)
-                print('please first remove it and then rerun setup')
+                print('you have two options: first remove it and then rerun setup')
+                print('                      or force configuration with --force')
                 sys.exit()
     else:
         os.makedirs(build_path, 0755)
