@@ -240,9 +240,6 @@ def gen_cmake_command():
         for definition in args.define:
             command += ' -D%s' % definition
 
-    if args.tests:
-        command += ' -DENABLE_TESTS=ON'
-
     command += ' %s' % root_directory
 
     print('%s\n' % command)
