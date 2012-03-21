@@ -162,6 +162,11 @@ group.add_argument('--host',
 
 args = parser.parse_args()
 
+def abspath(path):
+    path = os.path.expandvars(path)
+    path = os.path.expanduser(path)
+    return os.path.abspath(path)
+
 def check_cmake_exists():
     p = subprocess.Popen('cmake --version',
             shell=True,
@@ -208,10 +213,10 @@ def gen_cmake_command():
     command += ' -DENABLE_TESTS=%s'  % args.tests.upper()
 
     if args.blas_dir:
-        command += ' -DBLAS_ROOT=%s' % args.blas_dir
+        command += ' -DBLAS_ROOT={0}'.format(abspath(args.blas_dir))
 
     if args.lapack_dir:
-        command += ' -DLAPACK_ROOT=%s' % args.lapack_dir
+        command += ' -DLAPACK_ROOT={0}'.format(abspath(args.lapack_dir))
 
     if args.check:
         command += ' -DENABLE_BOUNDS_CHECK=ON'
