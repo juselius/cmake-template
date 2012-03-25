@@ -9,7 +9,6 @@ set (PROJECT_VERSION_MINOR 0)
 set (PROJECT_VERSION_PATCH 0)
 
 option(ENABLE_TESTS "Enable test suite" ON)
-option(ENABLE_GTEST "Enable Googel-test" OFF)
 option(ENABLE_BLAS "Use BLAS backend for linear algebra" ON)
 option(ENABLE_MPI "Enable MPI parallelization" OFF)
 option(ENABLE_OPENMP "Enable OpenMP parallelization" OFF)
@@ -17,12 +16,13 @@ option(ENABLE_CODE_COVERAGE "Compile with code coverage turned on" OFF)
 
 include(ConfigProjectVersion)
 include(ConfigSafeGuards)
+include(UseGlobalBuildTree)
 include(ConfigCompilerFlags)
 
 #set (NETCDF_CXX YES)
 #set(Boost_USE_MULTITHREADED OFF)
 
-#find_package(PythonInterp REQUIRED)
+#find_package(Python REQUIRED)
 #find_package(Eigen3)
 #find_package(Boost REQUIRED serialization)
 #find_package(HDF5 COMPONENTS CXX)
@@ -52,8 +52,6 @@ if (ENABLE_BLAS)
         find_package(BLAS)
     endif()
 endif ()
-
-include(CommonBuildTree)
 
 add_subdirectory(src)
 
