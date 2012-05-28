@@ -11,3 +11,4 @@ cdash/cdash.py
 *.swp
 *.a
 *.so
+*.pyc
