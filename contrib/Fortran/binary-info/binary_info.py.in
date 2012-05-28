@@ -1,0 +1,54 @@
+#!/usr/bin/env python
+
+import sys
+import datetime
+
+s = []
+s.append(['Who compiled'   , r'@USER_NAME@@@HOST_NAME@' ])
+s.append(['System'         , r'@CMAKE_SYSTEM@'          ])
+s.append(['Processor'      , r'@CMAKE_SYSTEM_PROCESSOR@'])
+s.append(['64-bit integers', r'@ENABLE_64BIT_INTEGERS@' ])
+s.append(['MPI'            , r'@ENABLE_MPI@'            ])
+
+s.append(['Fortran compiler'        , r'@CMAKE_Fortran_COMPILER@'  ])
+s.append(['Fortran compiler version', r'@FORTRAN_COMPILER_VERSION@'])
+if '@CMAKE_BUILD_TYPE@' == 'Debug':
+    s.append(['Fortran flags', r'@CMAKE_Fortran_FLAGS@ @CMAKE_Fortran_FLAGS_DEBUG@'])
+elif '@CMAKE_BUILD_TYPE@' == 'Release':
+    s.append(['Fortran flags', r'@CMAKE_Fortran_FLAGS@ @CMAKE_Fortran_FLAGS_RELEASE@'])
+
+s.append(['C compiler'        , r'@CMAKE_C_COMPILER@'  ])
+s.append(['C compiler version', r'@C_COMPILER_VERSION@'])
+if '@CMAKE_BUILD_TYPE@' == 'Debug':
+    s.append(['C flags', r'@CMAKE_C_FLAGS@ @CMAKE_C_FLAGS_DEBUG@'])
+elif '@CMAKE_BUILD_TYPE@' == 'Release':
+    s.append(['C flags', r'@CMAKE_C_FLAGS@ @CMAKE_C_FLAGS_RELEASE@'])
+
+s.append(['BLAS'             , r'@BLAS_LIBRARIES@'       ])
+s.append(['LAPACK'           , r'@LAPACK_LIBRARIES@'     ])
+s.append(['Explicit libs'    , r'@EXPLICIT_LIBS@'        ])
+s.append(['Static linking'   , r'@ENABLE_STATIC_LINKING@'])
+s.append(['Last Git revision', r'@GIT_REVISION@'         ])
+
+output  = ''
+output += 'subroutine print_binary_info()\n'
+output += '#include "priunit.h"\n'
+
+def chunkify(l, n):
+    return [l[i:i+n] for i in range(0, len(l), n)]
+
+def print_line(l, r):
+    return "    write(lupri, '(a)') ' %s | %s'\n" % (l.ljust(24), r)
+
+for line in s:
+    chunk_l = chunkify(line[1], 50)
+    for i in range(len(chunk_l)):
+        if i == 0:
+            output += print_line(line[0], chunk_l[i])
+        else:
+            output += print_line(' ', chunk_l[i])
+output += print_line('Configuration time', datetime.datetime.now())
+
+output += 'end subroutine'
+
+print(output)
