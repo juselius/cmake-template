@@ -53,6 +53,8 @@ if (ENABLE_BLAS)
     endif()
 endif ()
 
+#add_definitions(-DTHIS_IS_CMAKE_BUILD)
+
 add_subdirectory(src)
 
 if (ENABLE_TESTS)

@@ -16,7 +16,8 @@ option(ENABLE_CODE_COVERAGE "Compile with code coverage turned on" OFF)
 
 include(ConfigProjectVersion)
 include(ConfigSafeGuards)
-include(ConfigFortranCompilerFlags)
+include(UseGlobalBuildTree)
+include(ConfigCompilerFlags)
 
 #set (NETCDF_F90 "YES")
 #find_package(PythonInterp REQUIRED)
@@ -47,8 +48,6 @@ if (ENABLE_BLAS)
 endif ()
 
 #add_definitions(-DTHIS_IS_CMAKE_BUILD)
-
-include(CommonBuildTree)
 
 add_subdirectory(src)
 
