@@ -1,5 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+include(ConfigSafeGuards)
 
 project(Example) 
 enable_language(CXX)
@@ -69,6 +70,12 @@ configure_file (
     ${PROJECT_SOURCE_DIR}/config.h.in
     ${PROJECT_BINARY_DIR}/config.h
     )
+
+#find_package(Doxygen)
+#find_package(Sphinx)
+#if (DOXYGEN_FOUND OR SPHINX_FOUND)
+#    add_subdirectory(Documentation EXCLUDE_FROM_ALL)
+#endif()
 
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "")
 set(CPACK_PACKAGE_VENDOR "")

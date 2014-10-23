@@ -35,7 +35,7 @@ if (CMAKE_Fortran_COMPILER_WORKS)
             )
     else()
         set(CMAKE_Fortran_MODULE_DIRECTORY
-            ${PROJECT_BINARY_DIR}/modules
+            ${PROJECT_BINARY_DIR}/include/fortran
             )
     endif()
     include_directories(${CMAKE_Fortran_MODULE_DIRECTORY})
