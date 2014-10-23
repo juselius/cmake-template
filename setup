@@ -11,26 +11,23 @@ import sys
 import string
 import re
 import subprocess
-
-sys.path.append('cmake')
-from argparse import ArgumentParser
+import shutil
+import argparse 
 
 if sys.version < '2.4':
     print('requires python version >= 2.4')
     sys.exit(1)
 
 root_directory = os.path.realpath(__file__)[:-5]
-default_path = root_directory + 'build/'
 
 # initialize parser
 
-parser = ArgumentParser(description="Setup build configurations.")
+parser = argparse.ArgumentParser(description="Setup build configurations.")
 
 # define options
 
 parser.add_argument('builddir', nargs='?',
         action='store',
-        default=default_path,
         help='build directory [default: %(default)s]',
         metavar='build path')
 
@@ -111,13 +108,17 @@ group.add_argument('--force',
         action='store_true',
         default=False,
         help='run setup even if build directory exists [default: %(default)s]')
+group.add_argument('--clean',
+        action='store_true',
+        default=False,
+        help='remove the build directory exists [default: %(default)s]')
 group.add_argument('--debug',
         action='store_true',
         default=False,
-        help='build in debug mode (no optimization) [default: %(default)s]')
+        help='build in debug mode [default: %(default)s]')
 group.add_argument('--release',
-        action='store_false',
-        dest='debug',
+        action='store_true',
+        default=False,
         help='build in release mode (full optimization) [default: %(default)s]')
 group.add_argument('--tests',
         nargs='?',
@@ -160,15 +161,33 @@ group.add_argument('--host',
         help="use predefined defaults for 'host'",
         metavar='STRING')
 
+#group.add_argument('--netcdf-dir',
+#        action='store',
+#        default=None,
+#        help='directory containing NETCDF libraries [default: pick automatically based on NETCDF_ROOT (see INSTALL.rst)]',
+#        metavar='PATH')
+#group.add_argument('--eigen3-dir',
+#        action='store',
+#        help='path to Eigen3 [default: %(default)s]',
+#        metavar='PATH')
+#group.add_argument('--boost-dir',
+#        action='store',
+#        help='path to Boost C++ libraries [default: %(default)s]',
+#        metavar='PATH')
 # process input
 
 args = parser.parse_args()
 
-def abspath(path):
-    path = os.path.expandvars(path)
-    path = os.path.expanduser(path)
-    return os.path.abspath(path)
-
+if not args.builddir:
+    if args.debug and args.release:
+        args.builddir = root_directory + 'relwithdeb/'
+    elif args.release:
+        args.builddir = root_directory + 'release/'
+    else:
+        args.builddir = root_directory + 'build/'
+elif args.builddir[0] not in '/~':
+    args.builddir = root_directory + args.builddir
+    
 def check_cmake_exists():
     p = subprocess.Popen('cmake --version',
             shell=True,
@@ -237,11 +256,21 @@ def gen_cmake_command():
 
     if args.prefix:
         command += ' -DCMAKE_INSTALL_PREFIX=' + args.prefix
-
-    if args.debug:
-        command += ' -DCMAKE_BUILD_TYPE=Debug'
     else:
+        command += ' -DCMAKE_INSTALL_PREFIX=' + args.builddir
+
+    if args.debug and args.release:
+        command += ' -DCMAKE_BUILD_TYPE=Relwithdebinfo'
+    elif args.release:
         command += ' -DCMAKE_BUILD_TYPE=Release'
+    else:
+        command += ' -DCMAKE_BUILD_TYPE=Debug'
+
+    if args.eigen3_dir:
+        command += ' -DEIGEN3_ROOT={0}'.format(args.eigen3_dir)
+
+    if args.boost_dir:
+        command += ' -DBOOST_ROOT={0}'.format(args.boost_dir)
 
     if args.define:
         for definition in args.define:
@@ -278,7 +307,10 @@ def setup_build_path(build_path, only_show_command):
         return
     if os.path.isdir(build_path):
         if not only_show_command:
-            if args.force:
+            if args.clean:
+                shutil.rmtree(build_path)
+                os.makedirs(build_path, 0755)
+            elif args.force:
                 fname = os.path.join(build_path, 'CMakeCache.txt')
                 if os.path.exists(fname):
                     os.unlink(fname)
@@ -341,15 +373,20 @@ def configure_host():
 
 def configure_default_compilers():
     if not args.cc:
-        args.cc = 'gcc'
+        if args.mpi == 'on':
+            args.cc = 'mpicc'
+        else:
+            args.cc = 'gcc'
     if not args.cxx:
-        args.cxx = 'g++'
+        if args.mpi == 'on':
+            args.cxx = 'mpicxx'
+        else:
+            args.cxx = 'g++'
     if not args.fc:
-        args.fc = 'gfortran'
-    if args.mpi == 'on':
-        args.fc = 'mpif90'
-        args.cc = 'mpicc'
-        args.cxx = 'mpicxx'
+        if args.mpi == 'on':
+            args.fc = 'mpif90'
+        else:
+            args.fc = 'gfortran'
 
 configure_ubuntu = configure_default_compilers
 configure_fedora = configure_default_compilers
